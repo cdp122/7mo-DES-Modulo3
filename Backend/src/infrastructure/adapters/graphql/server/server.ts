@@ -33,9 +33,16 @@ const crearSchema = () => {
   return makeExecutableSchema({
     typeDefs,
     resolvers: {
-      ...administradorResolvers,
-      ...dimensionResolvers,
-      ...evaluacionResolvers
+      Query: {
+        ...administradorResolvers.Query,
+        ...dimensionResolvers.Query,
+        ...evaluacionResolvers.Query
+      },
+      Mutation: {
+        ...administradorResolvers.Mutation,
+        ...dimensionResolvers.Mutation,
+        ...evaluacionResolvers.Mutation
+      }
     }
   });
 };
