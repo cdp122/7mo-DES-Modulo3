@@ -90,6 +90,130 @@ class PreguntasRepository {
     }
   }
 
+  Future<DimensionEntity> crearDimension(DimensionEntity dimension) async {
+    if (_isUsingMock) {
+      if (_mockDimensiones.any((d) => d.orden == dimension.orden)) {
+        throw Exception('Ya existe una dimensión con el orden ${dimension.orden}');
+      }
+      final nuevo = DimensionEntity(
+        id: 'mock_d${dimension.orden}',
+        orden: dimension.orden,
+        nombre: dimension.nombre,
+        descripcion: dimension.descripcion,
+        fundamento: dimension.fundamento,
+        reactivos: const [],
+      );
+      _mockDimensiones.add(nuevo);
+      return nuevo;
+    }
+
+    const mutation = r'''
+      mutation CrearDimension($input: CrearDimensionInput!) {
+        crearDimension(input: $input) {
+          id
+          orden
+          nombre
+          descripcion
+          fundamento
+          reactivos {
+            reactivo_codigo
+            enunciado
+            pista
+          }
+        }
+      }
+    ''';
+
+    final variables = {
+      'input': {
+        'orden': dimension.orden,
+        'nombre': dimension.nombre,
+        'descripcion': dimension.descripcion,
+        'fundamento': dimension.fundamento,
+        'reactivos': [],
+      }
+    };
+
+    final data = await _graphQLService.execute(mutation, variables: variables);
+    if (data.containsKey('crearDimension')) {
+      return DimensionEntity.fromJson(data['crearDimension'] as Map<String, dynamic>);
+    }
+    throw Exception('Error al crear la dimensión en el servidor');
+  }
+
+  Future<DimensionEntity> actualizarDimension(
+    String id, {
+    String? nombre,
+    String? descripcion,
+    String? fundamento,
+    List<ReactivoEntity>? reactivos,
+  }) async {
+    if (_isUsingMock || id.startsWith('mock_')) {
+      final index = _mockDimensiones.indexWhere((d) => d.id == id);
+      if (index < 0) throw Exception('Dimensión no encontrada');
+      final dim = _mockDimensiones[index];
+      final updated = dim.copyWith(
+        nombre: nombre,
+        descripcion: descripcion,
+        fundamento: fundamento,
+        reactivos: reactivos ?? dim.reactivos,
+      );
+      _mockDimensiones[index] = updated;
+      return updated;
+    }
+
+    final input = <String, dynamic>{
+      if (nombre != null) 'nombre': nombre,
+      if (descripcion != null) 'descripcion': descripcion,
+      if (fundamento != null) 'fundamento': fundamento,
+      if (reactivos != null) 'reactivos': reactivos.map((r) => r.toJson()).toList(),
+    };
+
+    const mutation = r'''
+      mutation ActualizarDimension($id: ID!, $input: ActualizarDimensionInput!) {
+        actualizarDimension(id: $id, input: $input) {
+          id
+          orden
+          nombre
+          descripcion
+          fundamento
+          reactivos {
+            reactivo_codigo
+            enunciado
+            pista
+          }
+        }
+      }
+    ''';
+
+    final data = await _graphQLService.execute(mutation, variables: {'id': id, 'input': input});
+    if (data.containsKey('actualizarDimension') && data['actualizarDimension'] != null) {
+      return DimensionEntity.fromJson(data['actualizarDimension'] as Map<String, dynamic>);
+    }
+    throw Exception('Error al actualizar la dimensión en el servidor');
+  }
+
+  Future<bool> eliminarDimension(String id) async {
+    if (_isUsingMock || id.startsWith('mock_')) {
+      final index = _mockDimensiones.indexWhere((d) => d.id == id);
+      if (index < 0) return false;
+      _mockDimensiones.removeAt(index);
+      return true;
+    }
+
+    const mutation = r'''
+      mutation EliminarDimension($id: ID!) {
+        eliminarDimension(id: $id)
+      }
+    ''';
+
+    final data = await _graphQLService.execute(mutation, variables: {'id': id});
+    if (data.containsKey('eliminarDimension')) {
+      return data['eliminarDimension'] as bool;
+    }
+    throw Exception('Error al eliminar la dimensión en el servidor');
+  }
+
   Future<DimensionEntity> agregarReactivo(String dimensionId, ReactivoEntity reactivo) async {
     if (_isUsingMock || dimensionId.startsWith('mock_')) {
       // Manage mock locally

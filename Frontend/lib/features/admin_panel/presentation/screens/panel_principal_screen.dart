@@ -54,6 +54,16 @@ class PanelPrincipalScreen extends StatelessWidget {
         onTap:       () => context.go('/gestion-preguntas'),
       ),
       _CardData(
+        icon:     Icons.category_rounded,
+        title:    'Dimensiones',
+        subtitle: 'Ver detalle de dimensiones y sus reactivos.',
+        accent:   _P.amber,
+        badge:    'D1 · D2 · D3',
+        status:   'Activo',
+        isActive: true,
+        onTap:    () => context.go('/admin/dimensiones'),
+      ),
+      _CardData(
         icon:     Icons.bar_chart_rounded,
         title:    'Resultados',
         subtitle: 'Promedios dimensionales e índices de docentes.',

@@ -9,6 +9,7 @@ import 'features/auth/domain/usecases/login_administrador.dart';
 import 'features/auth/presentation/controller/auth_controller.dart';
 import 'features/admin_panel/data/repositories/preguntas_repository.dart';
 import 'features/admin_panel/presentation/controller/preguntas_cubit.dart';
+import 'features/admin_panel/presentation/controller/dimensiones_cubit.dart';
 
 final sl = GetIt.instance; // sl stands for Service Locator
 
@@ -42,4 +43,7 @@ Future<void> init() async {
   // Features - Admin Panel (Preguntas CRUD)
   sl.registerLazySingleton(() => PreguntasRepository(sl()));
   sl.registerFactory(() => PreguntasCubit(sl()));
+
+  // Features - Admin Panel (Dimensiones)
+  sl.registerFactory(() => DimensionesCubit(sl()));
 }

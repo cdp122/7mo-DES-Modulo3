@@ -6,7 +6,11 @@ import '../../features/encuesta/presentation/screens/responder_encuesta_screen.d
 import '../../features/encuesta/presentation/screens/resultados_screen.dart';
 import '../../features/admin_panel/presentation/screens/panel_principal_screen.dart';
 import '../../features/admin_panel/presentation/screens/gestion_preguntas_screen.dart';
+import '../../features/admin_panel/presentation/screens/dimensiones_list_screen.dart';
+import '../../features/admin_panel/presentation/screens/dimension_detail_screen.dart';
 import '../../features/admin_panel/presentation/controller/preguntas_cubit.dart';
+import '../../features/admin_panel/presentation/controller/dimensiones_cubit.dart';
+import '../../features/admin_panel/domain/entities/dimension.dart';
 import '../../features/auth/domain/entities/usuario.dart';
 import '../../injection.dart';
 
@@ -46,6 +50,23 @@ class AppRouter {
           create: (context) => sl<PreguntasCubit>(),
           child: const GestionPreguntasScreen(),
         ),
+      ),
+      GoRoute(
+        path: '/admin/dimensiones',
+        builder: (context, state) => BlocProvider<DimensionesCubit>(
+          create: (context) => sl<DimensionesCubit>(),
+          child: const DimensionesListScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/dimensiones/:id',
+        builder: (context, state) {
+          final dimension = state.extra as DimensionEntity?;
+          if (dimension == null) {
+            return const DimensionesListScreen();
+          }
+          return DimensionDetailScreen(dimension: dimension);
+        },
       ),
     ],
   );
