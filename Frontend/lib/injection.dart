@@ -1,14 +1,22 @@
 import 'package:get_it/get_it.dart';
+import 'package:dio/dio.dart';
+import 'core/network/graphql_service.dart';
 import 'features/auth/data/datasources/auth_remote_datasource.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/domain/usecases/verificar_cedula.dart';
 import 'features/auth/domain/usecases/login_administrador.dart';
 import 'features/auth/presentation/controller/auth_controller.dart';
+import 'features/admin_panel/data/repositories/preguntas_repository.dart';
+import 'features/admin_panel/presentation/controller/preguntas_cubit.dart';
 
 final sl = GetIt.instance; // sl stands for Service Locator
 
 Future<void> init() async {
+  // Core
+  sl.registerLazySingleton(() => Dio());
+  sl.registerLazySingleton(() => GraphQLService(dio: sl()));
+
   // Features - Auth
 
   // Bloc / Cubit
@@ -30,4 +38,8 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(),
   );
+
+  // Features - Admin Panel (Preguntas CRUD)
+  sl.registerLazySingleton(() => PreguntasRepository(sl()));
+  sl.registerFactory(() => PreguntasCubit(sl()));
 }

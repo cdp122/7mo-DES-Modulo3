@@ -98,7 +98,7 @@ class _ContrasenaAdminScreenState extends State<ContrasenaAdminScreen> {
                   constraints: const BoxConstraints(maxWidth: 450),
                   child: Card(
                     elevation: isDark ? 8 : 4,
-                    shadowColor: theme.colorScheme.primary.withOpacity(0.1),
+                    shadowColor: AppColors.primary.withValues(alpha: 0.08),
                     child: Padding(
                       padding: const EdgeInsets.all(32.0),
                       child: Form(
@@ -113,18 +113,18 @@ class _ContrasenaAdminScreenState extends State<ContrasenaAdminScreen> {
                                 height: 80,
                                 width: 80,
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
+                                  gradient: const LinearGradient(
                                     colors: [
-                                      Colors.amber.shade600,
-                                      Colors.orange.shade800,
+                                      AppColors.warning,   // #DFA235 mustard gold
+                                      AppColors.secondary, // #D2693E terracotta
                                     ],
                                   ),
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.orange.withOpacity(0.3),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 5),
+                                      color: AppColors.secondary.withValues(alpha: 0.3),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 6),
                                     ),
                                   ],
                                 ),

@@ -81,14 +81,14 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
               end: Alignment.bottomRight,
               colors: isDark
                   ? [
-                      const Color(0xFF0F172A),
-                      const Color(0xFF1E1E38),
-                      const Color(0xFF111827),
+                      AppColors.backgroundDark,
+                      AppColors.surfaceDark,
+                      AppColors.backgroundDark,
                     ]
                   : [
-                      const Color(0xFFEEF2F6),
-                      const Color(0xFFE0E7FF),
-                      const Color(0xFFF1F5F9),
+                      const Color(0xFFF5F0E8), // warm ivory
+                      const Color(0xFFE8F1F2), // light teal tint
+                      AppColors.backgroundLight,
                     ],
             ),
           ),
@@ -100,7 +100,7 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                   constraints: const BoxConstraints(maxWidth: 450),
                   child: Card(
                     elevation: isDark ? 8 : 4,
-                    shadowColor: theme.colorScheme.primary.withOpacity(0.1),
+                    shadowColor: AppColors.primary.withValues(alpha: 0.08),
                     child: Padding(
                       padding: const EdgeInsets.all(32.0),
                       child: Form(
@@ -123,9 +123,9 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: theme.colorScheme.primary.withOpacity(0.3),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 5),
+                                      color: AppColors.primary.withValues(alpha: 0.25),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 6),
                                     ),
                                   ],
                                 ),

@@ -61,7 +61,7 @@ class AvisoRolDialog extends StatelessWidget {
           label: const Text('Responder Encuesta'),
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.5)),
+            side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.5)),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
