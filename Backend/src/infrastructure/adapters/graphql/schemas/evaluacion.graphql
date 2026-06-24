@@ -1,0 +1,68 @@
+type DatosDocente {
+  cedula: String!
+  nombre: String!
+}
+
+type Respuesta {
+  reactivo_codigo: String!
+  valor: Int!
+}
+
+type Subtotales {
+  D1: Float!
+  D2: Float!
+  D3: Float!
+}
+
+type IndicesDimensionales {
+  ID1: Float!
+  ID2: Float!
+  ID3: Float!
+}
+
+type ResultadosEvaluacion {
+  subtotales: Subtotales!
+  indices_dimensionales: IndicesDimensionales!
+  IGPP: Float!
+  dimension_prioritaria: String!
+}
+
+type Evaluacion {
+  id: ID!
+  datos_docente: DatosDocente!
+  respuestas: [Respuesta!]!
+  resultados: ResultadosEvaluacion!
+}
+
+type PromediosGlobales {
+  D1: Float!
+  D2: Float!
+  D3: Float!
+  IGPP: Float!
+}
+
+input DatosDocenteInput {
+  cedula: String!
+  nombre: String!
+}
+
+input RespuestaInput {
+  reactivo_codigo: String!
+  valor: Int!
+}
+
+input CrearEvaluacionInput {
+  datos_docente: DatosDocenteInput!
+  respuestas: [RespuestaInput!]!
+}
+
+type Query {
+  obtenerEvaluaciones: [Evaluacion!]!
+  obtenerEvaluacion(id: ID!): Evaluacion
+  obtenerEvaluacionesPorDocente(cedula: String!): [Evaluacion!]!
+  obtenerPromediosGlobales: PromediosGlobales!
+}
+
+type Mutation {
+  crearEvaluacion(input: CrearEvaluacionInput!): Evaluacion!
+}

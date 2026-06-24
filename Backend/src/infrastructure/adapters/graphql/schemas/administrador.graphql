@@ -1,0 +1,31 @@
+type Administrador {
+  id: ID!
+  nombre: String!
+  email: String!
+}
+
+type AuthPayload {
+  token: String!
+  administrador: Administrador!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input CrearAdministradorInput {
+  nombre: String!
+  email: String!
+  password: String!
+}
+
+type Query {
+  obtenerAdministrador(id: ID!): Administrador
+  administradorActual: Administrador
+}
+
+type Mutation {
+  login(input: LoginInput!): AuthPayload!
+  crearAdministrador(input: CrearAdministradorInput!): Administrador!
+}

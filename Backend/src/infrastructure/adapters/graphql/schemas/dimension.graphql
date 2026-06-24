@@ -1,0 +1,54 @@
+type Reactivo {
+  reactivo_codigo: String!
+  enunciado: String!
+  pista: String
+}
+
+type Dimension {
+  id: ID!
+  orden: Int!
+  nombre: String!
+  descripcion: String!
+  fundamento: String!
+  reactivos: [Reactivo!]!
+}
+
+input ReactivoInput {
+  reactivo_codigo: String!
+  enunciado: String!
+  pista: String
+}
+
+input CrearDimensionInput {
+  orden: Int!
+  nombre: String!
+  descripcion: String!
+  fundamento: String!
+  reactivos: [ReactivoInput!]!
+}
+
+input ActualizarDimensionInput {
+  nombre: String
+  descripcion: String
+  fundamento: String
+  reactivos: [ReactivoInput!]
+}
+
+input CrearReactivoInput {
+  reactivo_codigo: String!
+  enunciado: String!
+  pista: String
+}
+
+type Query {
+  obtenerDimensiones: [Dimension!]!
+  obtenerDimension(id: ID!): Dimension
+  obtenerDimensionPorOrden(orden: Int!): Dimension
+}
+
+type Mutation {
+  crearDimension(input: CrearDimensionInput!): Dimension!
+  actualizarDimension(id: ID!, input: ActualizarDimensionInput!): Dimension
+  eliminarDimension(id: ID!): Boolean
+  agregarReactivo(dimensionId: ID!, input: CrearReactivoInput!): Dimension
+}
