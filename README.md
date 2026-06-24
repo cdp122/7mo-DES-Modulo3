@@ -37,6 +37,10 @@ El backend requiere un **Replica Set** de MongoDB para soportar transacciones. H
      .\scripts\run docker.ps1
      ```
   4. El script levantará el contenedor de Docker e inicializará el replica set automáticamente. Al finalizar, imprimirá el estado listo.
+  5. Luego ejecutar el script de seed para poblar la base de datos con datos iniciales:
+     ```powershell
+     .\Backend\scripts\inyect-seed.ps1
+     ```
 
 * **En macOS / Linux / Manual:**
   1. Ve a la carpeta `scripts/`:
@@ -51,6 +55,10 @@ El backend requiere un **Replica Set** de MongoDB para soportar transacciones. H
      ```bash
      docker exec -it mongo-local-tx mongosh --eval "rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]})"
      ```
+  4. Luego, ejecuta el script de seed para poblar la base de datos con datos iniciales:
+     ```bash
+     node ../Backend/scripts/seed.js
+     ``` 
 
 ---
 

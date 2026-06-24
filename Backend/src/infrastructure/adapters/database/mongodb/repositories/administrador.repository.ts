@@ -23,6 +23,7 @@ export class AdministradorRepository implements IAdministradorRepository {
     if (!doc) return null;
     return {
       id: doc._id.toString(),
+      cedula: doc.cedula,
       nombre: doc.nombre,
       email: doc.email,
       password: doc.password,

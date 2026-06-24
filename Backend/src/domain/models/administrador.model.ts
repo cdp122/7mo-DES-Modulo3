@@ -1,5 +1,6 @@
 export interface Administrador {
   id: string;
+  cedula: string;
   nombre: string;
   email: string;
   password: string;
@@ -7,6 +8,7 @@ export interface Administrador {
 }
 
 export interface CrearAdministradorDTO {
+  cedula: string;
   nombre: string;
   email: string;
   password: string;

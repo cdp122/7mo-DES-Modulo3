@@ -1,5 +1,6 @@
 type Administrador {
   id: ID!
+  cedula: String!
   nombre: String!
   email: String!
 }
@@ -15,6 +16,7 @@ input LoginInput {
 }
 
 input CrearAdministradorInput {
+  cedula: String!
   nombre: String!
   email: String!
   password: String!
