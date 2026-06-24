@@ -1,6 +1,6 @@
-# Arquitectura del Frontend
+# Arquitectura del Proyecto: Sistema de Encuestas Bifurcado
 
-Este documento define la arquitectura y la estructura de carpetas de la aplicación Flutter en el frontend. **Cualquier Agente de IA que trabaje en este repositorio DEBE seguir estrictamente estas directrices.**
+Este documento define la arquitectura, la estructura de carpetas y el manejo de recursos estáticos de la aplicación Flutter. **Cualquier Agente de IA que trabaje en este repositorio DEBE seguir estrictamente estas directrices.**
 
 ## 🏛️ Visión General de la Arquitectura
 
@@ -15,96 +15,110 @@ El proyecto está construido bajo los principios de **Clean Architecture** organ
 
 ## 📂 Estructura de Carpetas y Archivos
 
+Los archivos de código fuente residen en `lib/`, mientras que los recursos estáticos (imágenes, audios, configuraciones locales) se gestionan en la raíz del proyecto dentro de `assets/`.
+
 ```text
-lib/
+Frontend/
 │
-├── core/                               # Recursos globales, utilidades y configuración estática
-│   ├── constants/                      # Colores, strings fijos, dimensiones
-│   ├── errors/                         # Manejo de excepciones y fallos (Failures)
-│   ├── network/                        # Cliente HTTP (Dio) e interceptores
-│   │   └── api_client.dart
-│   ├── router/                         # Configuración de GoRouter y Guards de seguridad
-│   │   └── app_router.dart
-│   └── theme/                          # Estilos visuales globales
+├── assets/                             # RECURSOS ESTÁTICOS (Fuera de lib)
+│   ├── images/                         # Logotipos, ilustraciones, fondos, SVGs
+│   │   ├── logo_universidad.png
+│   │   └── login_background.svg
+│   ├── audio/                          # Alertas sonoras (éxito, error, etc.)
+│   │   └── success_sound.mp3
+│   └── data/                           # JSONs locales (ej. términos y condiciones)
+│       └── terminos_condiciones.json
 │
-├── features/                           # Módulos aislados de la aplicación (Features)
+├── lib/                                # CÓDIGO FUENTE (Clean Architecture)
+│   ├── core/                           # Recursos globales, utilidades y configuración estática
+│   │   ├── constants/                  # Colores, strings fijos, rutas de assets
+│   │   │   ├── app_colors.dart
+│   │   │   └── assets_constants.dart   # Centralización de referencias a la carpeta assets/
+│   │   ├── errors/                     # Manejo de excepciones y fallos (Failures)
+│   │   ├── network/                    # Cliente HTTP (Dio) e interceptores
+│   │   │   └── api_client.dart
+│   │   ├── router/                     # Configuración de GoRouter y Guards de seguridad
+│   │   │   └── app_router.dart
+│   │   └── theme/                      # Estilos visuales globales
 │   │
-│   ├── auth/                           # MÓDULO 1: Validación de Cédula y Login Admin
-│   │   ├── data/
-│   │   │   ├── datasources/            # Peticiones HTTP remotas/locales
-│   │   │   │   └── auth_remote_datasource.dart
-│   │   │   ├── models/                 # Mapeo de JSON a objetos Dart
-│   │   │   │   └── usuario_model.dart
-│   │   │   └── repositories/           # Implementación del contrato de dominio
-│   │   │       └── auth_repository_impl.dart
-│   │   ├── domain/
-│   │   │   ├── entities/               # Objetos puros de negocio (Usuario con rol)
-│   │   │   │   └── usuario.dart
-│   │   │   ├── repositories/           # Interfaz/Contrato del repositorio
-│   │   │   │   └── auth_repository.dart
-│   │   │   └── usecases/               # Lógica de negocio específica
-│   │   │       ├── verificar_cedula.dart
-│   │   │       └── login_administrador.dart
-│   │   └── presentation/
-│   │       ├── controller/             # Gestor de estado (Bloc / Cubit / Riverpod)
-│   │       │   └── auth_controller.dart
-│   │       ├── screens/                # Pantallas físicas
-│   │       │   ├── ingreso_cedula_screen.dart
-│   │       │   └── contrasena_admin_screen.dart
-│   │       └── widgets/                # Widgets locales del módulo
-│   │           └── aviso_rol_dialog.dart # Diálogo de selección para Administradores
+│   ├── features/                       # Módulos aislados de la aplicación (Features)
+│   │   │
+│   │   ├── auth/                       # MÓDULO 1: Validación de Cédula y Login Admin
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/        # Peticiones HTTP remotas/locales
+│   │   │   │   │   └── auth_remote_datasource.dart
+│   │   │   │   ├── models/             # Mapeo de JSON a objetos Dart
+│   │   │   │   │   └── usuario_model.dart
+│   │   │   │   └── repositories/       # Implementación del contrato de dominio
+│   │   │   │       └── auth_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   ├── entities/           # Objetos puros de negocio (Usuario con rol)
+│   │   │   │   │   └── usuario.dart
+│   │   │   │   ├── repositories/       # Interfaz/Contrato del repositorio
+│   │   │   │   │   └── auth_repository.dart
+│   │   │   │   └── usecases/           # Lógica de negocio específica
+│   │   │   │       ├── verificar_cedula.dart
+│   │   │   │       └── login_administrador.dart
+│   │   │   └── presentation/
+│   │   │       ├── controller/         # Gestor de estado (Bloc / Cubit / Riverpod)
+│   │   │       │   └── auth_controller.dart
+│   │   │       ├── screens/            # Pantallas físicas
+│   │   │       │   ├── ingreso_cedula_screen.dart
+│   │   │       │   └── contrasena_admin_screen.dart
+│   │   │       └── widgets/            # Widgets locales del módulo
+│   │   │           └── aviso_rol_dialog.dart # Diálogo de selección para Administradores
+│   │   │
+│   │   ├── encuesta/                   # MÓDULO 2: Flujo de preguntas, respuestas y resultados
+│   │   │   ├── data/
+│   │   │   │   ├── datasources/
+│   │   │   │   │   └── encuesta_remote_datasource.dart
+│   │   │   │   ├── models/
+│   │   │   │   │   ├── pregunta_model.dart
+│   │   │   │   │   └── respuesta_model.dart
+│   │   │   │   └── repositories/
+│   │   │   │       └── encuesta_repository_impl.dart
+│   │   │   ├── domain/
+│   │   │   │   ├── entities/
+│   │   │   │   │   ├── pregunta.dart
+│   │   │   │   │   └── dimension.dart
+│   │   │   │   ├── repositories/
+│   │   │   │   │   └── encuesta_repository.dart
+│   │   │   │   └── usecases/
+│   │   │   │       ├── obtener_encuesta_activa.dart
+│   │   │   │       └── enviar_encuesta.dart
+│   │   │   └── presentation/
+│   │   │       ├── controller/
+│   │   │       │   └── encuesta_controller.dart
+│   │   │       ├── screens/
+│   │   │       │   ├── responder_encuesta_screen.dart
+│   │   │       │   └── resultados_screen.dart
+│   │   │       └── widgets/
+│   │   │           └── tarjeta_pregunta_widget.dart
+│   │   │
+│   │   └── admin_panel/                # MÓDULO 3: Panel interno y CRUD de gestión
+│   │       ├── data/
+│   │       │   ├── datasources/
+│   │       │   │   └── admin_remote_datasource.dart
+│   │       │   └── repositories/
+│   │       │   │   └── admin_repository_impl.dart
+│   │       ├── domain/
+│   │       │   ├── repositories/
+│   │       │   │   └── admin_repository.dart
+│   │       │   └── usecases/           # Casos de uso de gestión
+│   │       │       ├── gestionar_preguntas_usecase.dart
+│   │       │       ├── gestionar_dimensiones_usecase.dart
+│   │       │       ├── gestionar_admins_usecase.dart
+│   │       │       └── cambiar_contrasena_usecase.dart
+│   │       └── presentation/
+│   │           ├── controller/
+│   │           │   └── admin_panel_controller.dart
+│   │           ├── screens/
+│   │           │   ├── panel_principal_screen.dart
+│   │           │   ├── gestion_preguntas_screen.dart
+│   │           │   ├── gestion_dimensiones_screen.dart
+│   │           │   └── gestion_usuarios_screen.dart
+│   │           └── widgets/
+│   │               └── tabla_datos_widget.dart
 │   │
-│   ├── encuesta/                       # MÓDULO 2: Flujo de preguntas, respuestas y resultados
-│   │   ├── data/
-│   │   │   ├── datasources/
-│   │   │   │   └── encuesta_remote_datasource.dart
-│   │   │   ├── models/
-│   │   │   │   ├── pregunta_model.dart
-│   │   │   │   └── respuesta_model.dart
-│   │   │   └── repositories/
-│   │   │       └── encuesta_repository_impl.dart
-│   │   ├── domain/
-│   │   │   ├── entities/
-│   │   │   │   ├── pregunta.dart
-│   │   │   │   └── dimension.dart
-│   │   │   ├── repositories/
-│   │   │   │   └── encuesta_repository.dart
-│   │   │   └── usecases/
-│   │   │       ├── obtener_encuesta_activa.dart
-│   │   │       └── enviar_encuesta.dart
-│   │   └── presentation/
-│   │       ├── controller/
-│   │       │   └── encuesta_controller.dart
-│   │       ├── screens/
-│   │       │   ├── responder_encuesta_screen.dart
-│   │       │   └── resultados_screen.dart
-│   │       └── widgets/
-│   │           └── tarjeta_pregunta_widget.dart
-│   │
-│   └── admin_panel/                    # MÓDULO 3: Panel interno y CRUD de gestión
-│       ├── data/
-│       │   ├── datasources/
-│       │   │   └── admin_remote_datasource.dart
-│       │   └── repositories/
-│       │       └── admin_repository_impl.dart
-│       ├── domain/
-│       │   ├── repositories/
-│       │   │   └── admin_repository.dart
-│       │   └── usecases/
-│       │       ├── gestionar_preguntas_usecase.dart
-│       │       ├── gestionar_dimensiones_usecase.dart
-│       │       ├── gestionar_admins_usecase.dart
-│       │       └── cambiar_contrasena_usecase.dart
-│       └── presentation/
-│           ├── controller/
-│           │   └── admin_panel_controller.dart
-│           ├── screens/
-│           │   ├── panel_principal_screen.dart
-│           │   ├── gestion_preguntas_screen.dart
-│           │   ├── gestion_dimensiones_screen.dart
-│           │   └── gestion_usuarios_screen.dart
-│           └── widgets/
-│               └── tabla_datos_widget.dart
-│
-├── injection.dart                      # Registro de dependencias globales (GetIt / Injectable)
-└── main.dart                           # Punto de entrada de la aplicación
+│   ├── injection.dart                  # Registro de dependencias globales (GetIt / Injectable)
+│   └── main.dart                       # Punto de entrada de la aplicación

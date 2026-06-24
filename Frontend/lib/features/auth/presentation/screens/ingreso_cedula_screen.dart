@@ -130,7 +130,7 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                                   ],
                                 ),
                                 child: const Icon(
-                                  Icons.badge_rounded,
+                                  Icons.waving_hand,
                                   size: 40,
                                   color: Colors.white,
                                 ),
@@ -138,7 +138,7 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                             ),
                             const SizedBox(height: 24),
                             Text(
-                              'Acceso al Sistema',
+                              '¡Hola!',
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.5,
@@ -147,7 +147,7 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Ingrese su cédula para comenzar la encuesta o acceder a su cuenta.',
+                              'Ingrese su cédula de identidad para comenzar la encuesta.',
                               style: theme.textTheme.bodyMedium,
                               textAlign: TextAlign.center,
                             ),
@@ -159,7 +159,6 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                               onFieldSubmitted: (_) => _submit(),
                               decoration: const InputDecoration(
                                 labelText: 'Cédula de Identidad',
-                                hintText: 'Ej. 123456',
                                 prefixIcon: Icon(Icons.credit_card_rounded),
                               ),
                               validator: (value) {
