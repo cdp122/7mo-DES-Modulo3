@@ -13,7 +13,8 @@ const AdministradorSchema = new Schema<IAdministradorDocument>({
   password: { type: String, required: true },
   version: { type: String, default: 'V6.6.22' }
 }, {
-  timestamps: true
+  timestamps: true,
+  collection: 'administradores'
 });
 
 export const AdministradorModel = mongoose.model<IAdministradorDocument>('Administrador', AdministradorSchema);

@@ -27,7 +27,8 @@ const DimensionSchema = new Schema<IDimensionDocument>({
   reactivos: [ReactivoSchema],
   version: { type: String, default: 'V6.6.22' }
 }, {
-  timestamps: true
+  timestamps: true,
+  collection: 'dimensiones'
 });
 
 export const DimensionModel = mongoose.model<IDimensionDocument>('Dimension', DimensionSchema);

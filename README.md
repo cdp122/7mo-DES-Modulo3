@@ -1,4 +1,4 @@
-# 🚀 Guía de Inicio Rápido - Evaluador de Instrumentos
+# 🚀 Guía de Inicio Rápido - Módulo 3 de Evaluación de Instrumento - Semillero UTN 2026
 
 Este repositorio es un monorepo que contiene el backend y el frontend para el sistema de evaluación del instrumento (Módulo 3).
 
@@ -107,3 +107,27 @@ El backend requiere un **Replica Set** de MongoDB para soportar transacciones. H
    > ⚠️ **Nota de Integración:**
    > Actualmente, el frontend utiliza datos simulados (mocks) en su origen de datos `AuthRemoteDataSourceImpl` para pruebas rápidas de la UI. Cuando desees conectar el frontend directamente al backend local, asegúrate de actualizar la URL base en:
    > `Frontend/lib/core/network/api_client.dart` apuntando a `http://localhost:4000/api` o la IP de tu máquina en caso de usar emuladores móviles (ej. `http://10.0.2.2:4000/api` para Android Emulator).
+
+## Información General apta para todos los usuarios
+
+El módulo 3 de evaluación de instrumento es un proyecto desarrollado por el Semillero UTN 2026, que tiene como objetivo principal evaluar el uso de las herramientas desarrolladas por los otros módulos para la creación de planificaciones académicas. 
+
+### Flujo de uso
+
+Cómo Administrador:
+1. Inicio Sesión como Administrador.
+2. Creación, Modificación y Eliminación de Dimensiones y Reactivos para mantenibilidad de preguntas de la encuesta.
+3. Ver Resultados Promedio Globales de la Evaluación de Instrumento.
+4. Capacidad de conseguir informes completos con gráficos en formatos compatibles como PDF y CSV.
+
+Cómo Docente:
+1. Registro del Docente por medio de la cédula de identidad.
+2. Responder Preguntas del Instrumento de Evaluación.
+3. Ver Resultados Propios de Evaluación.
+4. Capacidad de ver los resultados promedio global con respecto a la misma planificación.
+
+## Mapa de Ruta
+
+- En las primeras versiones (2026/06/22 - 2026/06/30) se plantea desarrollar un sistema de evaluación de instrumento que permita a los docentes responder preguntas de evaluación y a los administradores gestionar las dimensiones y reactivos de la encuesta.
+- A futuro (2026/07/01 - 2026/07/15) se plantea generar mantenibilidad con la exportación de los resultados de la evaluación en formatos PDF y CSV, así como la generación de gráficos para una mejor visualización de los resultados.
+- Durante el desarrollo se plantea dar mantenibilidad y flexibilidad en los RQ del sistema. 

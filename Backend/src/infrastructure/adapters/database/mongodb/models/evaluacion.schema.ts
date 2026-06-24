@@ -61,7 +61,8 @@ const EvaluacionSchema = new Schema<IEvaluacionDocument>({
   resultados: { type: ResultadosSchema, required: true },
   version: { type: String, default: 'V6.6.22' }
 }, {
-  timestamps: true
+  timestamps: true,
+  collection: 'evaluaciones'
 });
 
 export const EvaluacionModel = mongoose.model<IEvaluacionDocument>('Evaluacion', EvaluacionSchema);
