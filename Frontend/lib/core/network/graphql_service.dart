@@ -9,8 +9,8 @@ class GraphQLService {
     String endpoint = 'http://localhost:4000/graphql',
   })  : _dio = dio,
         _endpoint = endpoint {
-    _dio.options.connectTimeout = const Duration(seconds: 5);
-    _dio.options.receiveTimeout = const Duration(seconds: 5);
+    _dio.options.connectTimeout = const Duration(seconds: 50);
+    _dio.options.receiveTimeout = const Duration(seconds: 50);
   }
 
   Future<Map<String, dynamic>> execute(

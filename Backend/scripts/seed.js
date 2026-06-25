@@ -17,7 +17,7 @@ const DIMENSIONES = [
     orden: 1,
     nombre: 'Participación infantil',
     descripcion: '¿La planificación facilita la participación del niño?',
-    fundamentos: 'Rutas de participación de Shier (2001) y componente «Espacio» de Lundy (2007).',
+    fundamento: 'Rutas de participación de Shier (2001) y componente «Espacio» de Lundy (2007).',
     reactivos: [
       {
         codigo: '1.1',
@@ -51,7 +51,7 @@ const DIMENSIONES = [
     orden: 2,
     nombre: 'Voz del niño',
     descripcion: '¿La voz del niño es escuchada?',
-    fundamentos: 'Componentes «Voz» y «Audiencia» de Lundy (2007) y artículo 12 de la CDN.',
+    fundamento: 'Componentes «Voz» y «Audiencia» de Lundy (2007) y artículo 12 de la CDN.',
     reactivos: [
       {
         codigo: '2.1',
@@ -85,7 +85,7 @@ const DIMENSIONES = [
     orden: 3,
     nombre: 'Relación simétrica',
     descripcion: '¿La planificación promueve una relación simétrica y no adultocéntrica?',
-    fundamentos: 'Componente «Influencia» de Lundy (2007), escalera de Hart (1997) y crítica al adultocentrismo.',
+    fundamento: 'Componente «Influencia» de Lundy (2007), escalera de Hart (1997) y crítica al adultocentrismo.',
     reactivos: [
       {
         codigo: '3.1',

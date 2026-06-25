@@ -5,7 +5,7 @@ class ApiClient {
 
   ApiClient(this._dio) {
     // Configure base URL and timeouts
-    _dio.options.baseUrl = 'https://api.tudominio.com/api';
+    _dio.options.baseUrl = 'http://localhost:4000/api';
     _dio.options.connectTimeout = const Duration(seconds: 15);
     _dio.options.receiveTimeout = const Duration(seconds: 15);
     

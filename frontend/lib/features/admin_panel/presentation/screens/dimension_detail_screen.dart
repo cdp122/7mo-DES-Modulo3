@@ -40,7 +40,7 @@ class DimensionDetailScreen extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
         backgroundColor: AppColors.primary,
       ),
