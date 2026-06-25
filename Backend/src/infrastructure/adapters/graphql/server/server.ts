@@ -59,8 +59,10 @@ export const crearServidorGraphQL = async () => {
 
   app.use(
     '/graphql',
+    // Temporal: permitir cualquier origen
+    // La wea de google me anda cambiando el puerto por lo q al mandar la solicitud desde el front no me cogia el backend.
     cors<cors.CorsRequest>({
-      origin: ['http://localhost:3000', 'http://localhost:5173'],
+      origin: true,
       credentials: true
     }),
     express.json(),
