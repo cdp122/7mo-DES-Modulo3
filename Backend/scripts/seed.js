@@ -20,27 +20,27 @@ const DIMENSIONES = [
     fundamento: 'Rutas de participación de Shier (2001) y componente «Espacio» de Lundy (2007).',
     reactivos: [
       {
-        codigo: '1.1',
+        reactivo_codigo: '1.1',
         enunciado: 'La planificación contempla momentos concretos en los que el niño explora, decide o actúa según su propio criterio.',
         pista: 'Revisar si el documento permite que el niño pueda, por ejemplo, aportar a la Hoja Exploradora o elegir qué representar.',
       },
       {
-        codigo: '1.2',
+        reactivo_codigo: '1.2',
         enunciado: 'Las actividades permiten que el niño genere contenidos o respuestas propias.',
         pista: 'Verificar que el niño no se limite solo a ejecutar consignas predefinidas por el adulto.',
       },
       {
-        codigo: '1.3',
+        reactivo_codigo: '1.3',
         enunciado: 'Se prevén tiempos, espacios y recursos suficientes para que todos los niños puedan participar.',
         pista: 'Identificar si se contemplan materiales accesibles y una adecuada organización del aula y del hogar.',
       },
       {
-        codigo: '1.4',
+        reactivo_codigo: '1.4',
         enunciado: 'La participación del niño está presente en más de un momento de la secuencia.',
         pista: 'Comprobar si dicha participación ocurre en momentos como el lanzamiento, la indagación o la socialización, y no solo al inicio o al final.',
       },
       {
-        codigo: '1.5',
+        reactivo_codigo: '1.5',
         enunciado: 'La planificación amplía el espacio participativo al entorno familiar.',
         pista: 'Observar si se involucra a la familia como mediadora de la voz del niño.',
       },
@@ -54,27 +54,27 @@ const DIMENSIONES = [
     fundamento: 'Componentes «Voz» y «Audiencia» de Lundy (2007) y artículo 12 de la CDN.',
     reactivos: [
       {
-        codigo: '2.1',
+        reactivo_codigo: '2.1',
         enunciado: 'La planificación incorpora preguntas mediadoras o estrategias explícitas para recoger las opiniones, ideas y emociones del niño.',
         pista: 'Identificar en la redacción la presencia de estas preguntas o estrategias de escucha.',
       },
       {
-        codigo: '2.2',
+        reactivo_codigo: '2.2',
         enunciado: 'Se prevén medios de expresión accesibles para niños que aún no leen ni escriben.',
         pista: 'Buscar si se promueve el uso del dibujo, pictogramas, oralidad o dramatización.',
       },
       {
-        codigo: '2.3',
+        reactivo_codigo: '2.3',
         enunciado: 'Se contempla registrar o documentar lo que el niño expresa, de modo que su voz quede visible.',
         pista: 'Revisar si el documento incluye el uso de la hoja exploradora, un mural o una ficha de observación para este fin.',
       },
       {
-        codigo: '2.4',
+        reactivo_codigo: '2.4',
         enunciado: 'Las expresiones del niño tienen una audiencia real: se prevén instancias en las que alguien las escucha y las considera.',
         pista: 'Analizar si las voces son escuchadas y tomadas en cuenta por el docente, el grupo o la familia.',
       },
       {
-        codigo: '2.5',
+        reactivo_codigo: '2.5',
         enunciado: 'La planificación orienta a validar la expresión del niño sin corregirla ni sustituirla.',
         pista: 'Comprobar que se indique el respeto a la autenticidad de la respuesta del niño.',
       },
@@ -88,27 +88,27 @@ const DIMENSIONES = [
     fundamento: 'Componente «Influencia» de Lundy (2007), escalera de Hart (1997) y crítica al adultocentrismo.',
     reactivos: [
       {
-        codigo: '3.1',
+        reactivo_codigo: '3.1',
         enunciado: 'La planificación posiciona al docente como mediador del pensamiento y no como única fuente de decisión y conocimiento.',
         pista: 'Observar si el rol del docente se describe desde la mediación en lugar de la imposición.',
       },
       {
-        codigo: '3.2',
+        reactivo_codigo: '3.2',
         enunciado: 'Las decisiones sobre la actividad se comparten con el niño y no las define exclusivamente el adulto.',
         pista: 'Verificar si el niño opina sobre qué se hace, cómo y con qué se realiza la actividad.',
       },
       {
-        codigo: '3.3',
+        reactivo_codigo: '3.3',
         enunciado: 'La voz del niño tiene influencia real: lo que expresa nutre o modifica el desarrollo de la actividad o la construcción colectiva.',
         pista: 'Buscar si las aportaciones del niño se materializan en algo concreto, por ejemplo, en la creación del mural.',
       },
       {
-        codigo: '3.4',
+        reactivo_codigo: '3.4',
         enunciado: 'El lenguaje y las consignas reconocen al niño como sujeto capaz y competente, no como receptor pasivo.',
         pista: 'Analizar la redacción de las consignas para asegurar que se dirigen a un participante activo.',
       },
       {
-        codigo: '3.5',
+        reactivo_codigo: '3.5',
         enunciado: 'La planificación reconoce y respeta la autonomía progresiva del niño, distinguiendo lo que puede hacer por sí mismo y aquello en lo que requiere acompañamiento.',
         pista: 'Identificar si se diferencia claramente el trabajo independiente del niño del apoyo que le brinda el adulto.',
       },
@@ -138,8 +138,8 @@ function generarEvaluaciones() {
   ];
 
   for (let i = 0; i < docentes.length; i++) {
-    const respuestas = codigosReactivos.map((codigo, idx) => ({
-      reactivo_codigo: codigo,
+    const respuestas = codigosReactivos.map((reactivo_codigo, idx) => ({
+      reactivo_codigo: reactivo_codigo,
       valor: perfiles[i][idx],
     }));
 
