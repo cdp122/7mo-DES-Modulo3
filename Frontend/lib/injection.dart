@@ -37,7 +37,7 @@ Future<void> init() async {
 
   // Data Sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(),
+    () => AuthRemoteDataSourceImpl(sl()),
   );
 
   // Features - Admin Panel (Preguntas CRUD)

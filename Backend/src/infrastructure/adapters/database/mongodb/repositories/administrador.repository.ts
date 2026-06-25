@@ -8,6 +8,11 @@ export class AdministradorRepository implements IAdministradorRepository {
     return this.mapearADominio(doc);
   }
 
+  async buscarPorCedula(cedula: string): Promise<Administrador | null> {
+    const doc = await AdministradorModel.findOne({ cedula });
+    return this.mapearADominio(doc);
+  }
+
   async crear(administrador: Omit<Administrador, 'id'>): Promise<Administrador> {
     const doc = new AdministradorModel(administrador);
     const guardado = await doc.save();

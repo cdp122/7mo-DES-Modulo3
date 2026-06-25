@@ -25,6 +25,7 @@ input CrearAdministradorInput {
 type Query {
   obtenerAdministrador(id: ID!): Administrador
   administradorActual: Administrador
+  buscarAdminPorCedula(cedula: String!): Administrador
 }
 
 type Mutation {

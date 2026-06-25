@@ -5,10 +5,10 @@ import '../../../../core/constants/app_colors.dart';
 
 // ── Alias locales de la paleta para este archivo ────────────────
 class _P {
-  static const navy       = Color(0xFF16305B);
-  static const teal       = Color(0xFF2C86A0);
-  static const sage       = Color(0xFF4E9A6B);
-  static const amber      = Color(0xFFDFA235);
+  static const navy = Color(0xFF16305B);
+  static const teal = Color(0xFF2C86A0);
+  static const sage = Color(0xFF4E9A6B);
+  static const amber = Color(0xFFDFA235);
   static const terracotta = Color(0xFFD2693E);
 }
 
@@ -19,14 +19,13 @@ TextStyle _outfit(
   Color? color,
   double? letterSpacing,
   double? height,
-}) =>
-    GoogleFonts.outfit(
-      fontSize: size,
-      fontWeight: weight,
-      color: color,
-      letterSpacing: letterSpacing,
-      height: height,
-    );
+}) => GoogleFonts.outfit(
+  fontSize: size,
+  fontWeight: weight,
+  color: color,
+  letterSpacing: letterSpacing,
+  height: height,
+);
 
 // ────────────────────────────────────────────────────────────────
 class PanelPrincipalScreen extends StatelessWidget {
@@ -35,59 +34,58 @@ class PanelPrincipalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final width  = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
 
     // Breakpoints
-    final isWide   = width > 780;
+    final isWide = width > 780;
     final isMedium = width > 480;
 
     // Tarjetas de módulo
     final modules = [
       _CardData(
-        icon:        Icons.quiz_rounded,
-        title:       'Reactivos',
-        subtitle:    'Crear, editar y eliminar preguntas por dimensión.',
-        accent:      _P.sage,
-        badge:       'D1 · D2 · D3',
-        status:      'Activo',
-        isActive:    true,
-        onTap:       () => context.go('/gestion-preguntas'),
-      ),
-      _CardData(
-        icon:     Icons.category_rounded,
-        title:    'Dimensiones',
-        subtitle: 'Ver detalle de dimensiones y sus reactivos.',
-        accent:   _P.amber,
-        badge:    'D1 · D2 · D3',
-        status:   'Activo',
+        icon: Icons.quiz_rounded,
+        title: 'Reactivos',
+        subtitle: 'Crear, editar y eliminar preguntas por dimensión.',
+        accent: _P.sage,
+        badge: 'D1 · D2 · D3',
+        status: 'Activo',
         isActive: true,
-        onTap:    () => context.go('/admin/dimensiones'),
+        onTap: () => context.go('/gestion-preguntas'),
       ),
       _CardData(
-        icon:     Icons.bar_chart_rounded,
-        title:    'Resultados',
+        icon: Icons.category_rounded,
+        title: 'Dimensiones',
+        subtitle: 'Ver detalle de dimensiones y sus reactivos.',
+        accent: _P.amber,
+        badge: 'D1 · D2 · D3',
+        status: 'Activo',
+        isActive: true,
+        onTap: () => context.go('/admin/dimensiones'),
+      ),
+      _CardData(
+        icon: Icons.bar_chart_rounded,
+        title: 'Resultados',
         subtitle: 'Promedios dimensionales e índices de docentes.',
-        accent:   _P.teal,
-        badge:    'Próximamente',
-        status:   'En desarrollo',
+        accent: _P.teal,
+        badge: 'Próximamente',
+        status: 'En desarrollo',
         isActive: false,
-        onTap:    () => _dlgProximamente(context, 'Resultados y Reportes'),
+        onTap: () => _dlgProximamente(context, 'Resultados y Reportes'),
       ),
       _CardData(
-        icon:     Icons.manage_accounts_rounded,
-        title:    'Administradores',
+        icon: Icons.manage_accounts_rounded,
+        title: 'Administradores',
         subtitle: 'Registrar cuentas y gestionar credenciales de acceso.',
-        accent:   _P.terracotta,
-        badge:    'Próximamente',
-        status:   'En desarrollo',
+        accent: _P.terracotta,
+        badge: 'Próximamente',
+        status: 'En desarrollo',
         isActive: false,
-        onTap:    () => _dlgProximamente(context, 'Gestión de Administradores'),
+        onTap: () => _dlgProximamente(context, 'Gestión de Administradores'),
       ),
     ];
 
     return Scaffold(
-      backgroundColor:
-          isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+      backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
       body: CustomScrollView(
         slivers: [
           // ── Hero expandible ─────────────────────────────────
@@ -96,24 +94,24 @@ class PanelPrincipalScreen extends StatelessWidget {
             expandedHeight: 148,
             backgroundColor: _P.navy,
             elevation: 0,
+            title: Text(
+              'Panel de Administración',
+              style: _outfit(20, weight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3),
+            ),
             actions: [
               TextButton.icon(
                 onPressed: () => _dlgLogout(context),
-                icon: const Icon(Icons.logout_rounded,
-                    color: Colors.white70, size: 16),
-                label: Text('Salir',
-                    style: _outfit(13, color: Colors.white70)),
+                icon: const Icon(
+                  Icons.logout_rounded,
+                  color: Colors.white70,
+                  size: 16,
+                ),
+                label: Text('Salir', style: _outfit(13, color: Colors.white70)),
               ),
               const SizedBox(width: 8),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 56, bottom: 13),
-              collapseMode: CollapseMode.pin,
-              title: Text('Panel de Administración',
-                  style: _outfit(15,
-                      weight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: -0.2)),
+              collapseMode: CollapseMode.parallax,
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -124,55 +122,34 @@ class PanelPrincipalScreen extends StatelessWidget {
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                    padding: const EdgeInsets.fromLTRB(24, 56, 24, 0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Avatar icono
+                        // Icono escudo
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.25)),
+                              color: Colors.white.withValues(alpha: 0.25),
+                            ),
                           ),
                           child: const Icon(
-                              Icons.admin_panel_settings_rounded,
-                              size: 28,
-                              color: Colors.white),
+                            Icons.shield_rounded,
+                            size: 28,
+                            color: Colors.white,
+                          ),
                         ),
                         const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Administración del Sistema',
-                                  style: _outfit(17,
-                                      weight: FontWeight.w800,
-                                      color: Colors.white,
-                                      letterSpacing: -0.3)),
-                              const SizedBox(height: 4),
-                              // Badge del proyecto con color amber
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color:
-                                      _P.amber.withValues(alpha: 0.28),
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      color: _P.amber
-                                          .withValues(alpha: 0.45)),
-                                ),
-                                child: Text('Módulo 3 — Águilas',
-                                    style: _outfit(11,
-                                        weight: FontWeight.w600,
-                                        color: Colors.white,
-                                        letterSpacing: 0.3)),
-                              ),
-                            ],
+                        Text(
+                          'Panel de Administración',
+                          style: _outfit(
+                            22,
+                            weight: FontWeight.w800,
+                            color: Colors.white,
+                            letterSpacing: -0.5,
                           ),
                         ),
                       ],
@@ -191,33 +168,43 @@ class PanelPrincipalScreen extends StatelessWidget {
             ),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-
                 // ── Fila de estadísticas ─────────────────────
                 _StatsRow(isDark: isDark),
                 const SizedBox(height: 28),
 
                 // ── Encabezado sección módulos ───────────────
-                Row(children: [
-                  Container(
-                    width: 4, height: 18,
-                    decoration: BoxDecoration(
-                      color: _P.teal,
-                      borderRadius: BorderRadius.circular(2),
+                Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: _P.teal,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text('Módulos del sistema',
-                      style: _outfit(15,
-                          weight: FontWeight.w800,
-                          color: isDark ? Colors.white : _P.navy,
-                          letterSpacing: 0.2)),
-                  const Spacer(),
-                  Text('3 módulos',
-                      style: _outfit(12,
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.4)
-                              : Colors.black.withValues(alpha: 0.35))),
-                ]),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Módulos del sistema',
+                      style: _outfit(
+                        15,
+                        weight: FontWeight.w800,
+                        color: isDark ? Colors.white : _P.navy,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '3 módulos',
+                      style: _outfit(
+                        12,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.4)
+                            : Colors.black.withValues(alpha: 0.35),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
 
                 // ── Grid de módulos (sin aspect ratio rígido) ─
@@ -264,8 +251,9 @@ class PanelPrincipalScreen extends StatelessWidget {
             return Expanded(
               child: Padding(
                 padding: EdgeInsets.only(
-                    left: e.key == 0 ? 0 : 8,
-                    right: e.key == modules.length - 1 ? 0 : 8),
+                  left: e.key == 0 ? 0 : 8,
+                  right: e.key == modules.length - 1 ? 0 : 8,
+                ),
                 child: _ModuleCard(data: e.value, isDark: isDark),
               ),
             );
@@ -276,31 +264,37 @@ class PanelPrincipalScreen extends StatelessWidget {
 
     if (isMedium) {
       // 2 columnas en tablet
-      return Column(children: [
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                  child: _ModuleCard(data: modules[0], isDark: isDark)),
-              const SizedBox(width: 12),
-              Expanded(
-                  child: _ModuleCard(data: modules[1], isDark: isDark)),
-            ],
+      return Column(
+        children: [
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _ModuleCard(data: modules[0], isDark: isDark),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _ModuleCard(data: modules[1], isDark: isDark),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        _ModuleCard(data: modules[2], isDark: isDark),
-      ]);
+          const SizedBox(height: 12),
+          _ModuleCard(data: modules[2], isDark: isDark),
+        ],
+      );
     }
 
     // 1 columna en móvil
     return Column(
       children: modules
-          .map((m) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _ModuleCard(data: m, isDark: isDark),
-              ))
+          .map(
+            (m) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _ModuleCard(data: m, isDark: isDark),
+            ),
+          )
           .toList(),
     );
   }
@@ -310,19 +304,20 @@ class PanelPrincipalScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(children: [
-          const Icon(Icons.logout_rounded,
-              color: AppColors.error, size: 22),
-          const SizedBox(width: 10),
-          Text('¿Cerrar sesión?',
-              style: _outfit(17, weight: FontWeight.w700)),
-        ]),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.logout_rounded, color: AppColors.error, size: 22),
+            const SizedBox(width: 10),
+            Text(
+              '¿Cerrar sesión?',
+              style: _outfit(17, weight: FontWeight.w700),
+            ),
+          ],
+        ),
         content: Text(
           'Su sesión como Administrador será terminada.',
-          style: _outfit(14, height: 1.6,
-              color: AppColors.textSecondaryLight),
+          style: _outfit(14, height: 1.6, color: AppColors.textSecondaryLight),
         ),
         actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         actions: [
@@ -337,8 +332,10 @@ class PanelPrincipalScreen extends StatelessWidget {
               context.go('/');
             },
             icon: const Icon(Icons.logout_rounded, size: 16),
-            label: Text('Cerrar sesión', style: _outfit(14,
-                weight: FontWeight.w600)),
+            label: Text(
+              'Cerrar sesión',
+              style: _outfit(14, weight: FontWeight.w600),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
@@ -354,28 +351,30 @@ class PanelPrincipalScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: _P.amber.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _P.amber.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.construction_rounded,
+                color: _P.amber,
+                size: 22,
+              ),
             ),
-            child: const Icon(Icons.construction_rounded,
-                color: _P.amber, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(nombre,
-                style: _outfit(15, weight: FontWeight.w700)),
-          ),
-        ]),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(nombre, style: _outfit(15, weight: FontWeight.w700)),
+            ),
+          ],
+        ),
         content: Text(
           'Este módulo está en desarrollo y estará disponible próximamente.',
-          style: _outfit(14, height: 1.6,
-              color: AppColors.textSecondaryLight),
+          style: _outfit(14, height: 1.6, color: AppColors.textSecondaryLight),
         ),
         actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         actions: [
@@ -386,8 +385,10 @@ class PanelPrincipalScreen extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
             ),
-            child: Text('Entendido', style: _outfit(14,
-                weight: FontWeight.w600)),
+            child: Text(
+              'Entendido',
+              style: _outfit(14, weight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -439,9 +440,13 @@ class _ModuleCardState extends State<_ModuleCard>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 110));
-    _scale = Tween(begin: 1.0, end: 0.97)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 110),
+    );
+    _scale = Tween(
+      begin: 1.0,
+      end: 0.97,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
@@ -457,16 +462,19 @@ class _ModuleCardState extends State<_ModuleCard>
     final border = _hovered
         ? d.accent.withValues(alpha: 0.55)
         : (widget.isDark
-            ? Colors.white.withValues(alpha: 0.09)
-            : Colors.black.withValues(alpha: 0.09));
+              ? Colors.white.withValues(alpha: 0.09)
+              : Colors.black.withValues(alpha: 0.09));
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
-      onExit:  (_) => setState(() => _hovered = false),
+      onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTapDown:  (_) => _ctrl.forward(),
-        onTapUp:    (_) { _ctrl.reverse(); d.onTap(); },
+        onTapDown: (_) => _ctrl.forward(),
+        onTapUp: (_) {
+          _ctrl.reverse();
+          d.onTap();
+        },
         onTapCancel: () => _ctrl.reverse(),
         child: ScaleTransition(
           scale: _scale,
@@ -477,15 +485,23 @@ class _ModuleCardState extends State<_ModuleCard>
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: border, width: 1.5),
               boxShadow: _hovered
-                  ? [BoxShadow(
-                      color: d.accent.withValues(alpha: 0.18),
-                      blurRadius: 20, offset: const Offset(0, 6))]
-                  : [BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
-                      blurRadius: 8, offset: const Offset(0, 2))],
+                  ? [
+                      BoxShadow(
+                        color: d.accent.withValues(alpha: 0.18),
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
+                      ),
+                    ]
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,   // ← clave: sin Expanded
+              mainAxisSize: MainAxisSize.min, // ← clave: sin Expanded
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── Cabecera coloreada ─────────────────────
@@ -493,9 +509,11 @@ class _ModuleCardState extends State<_ModuleCard>
                   height: 72,
                   decoration: BoxDecoration(
                     color: d.accent.withValues(
-                        alpha: widget.isDark ? 0.20 : 0.09),
+                      alpha: widget.isDark ? 0.20 : 0.09,
+                    ),
                     borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(17)),
+                      top: Radius.circular(17),
+                    ),
                   ),
                   padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                   child: Row(
@@ -508,7 +526,8 @@ class _ModuleCardState extends State<_ModuleCard>
                           color: d.accent.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(11),
                           border: Border.all(
-                              color: d.accent.withValues(alpha: 0.3)),
+                            color: d.accent.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Icon(d.icon, size: 22, color: d.accent),
                       ),
@@ -516,7 +535,9 @@ class _ModuleCardState extends State<_ModuleCard>
                       // Badge de estado
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: d.isActive
                               ? _P.sage.withValues(alpha: 0.14)
@@ -532,7 +553,8 @@ class _ModuleCardState extends State<_ModuleCard>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
-                              width: 6, height: 6,
+                              width: 6,
+                              height: 6,
                               decoration: BoxDecoration(
                                 color: d.isActive
                                     ? _P.sage
@@ -541,12 +563,14 @@ class _ModuleCardState extends State<_ModuleCard>
                               ),
                             ),
                             const SizedBox(width: 5),
-                            Text(d.status,
-                                style: _outfit(10,
-                                    weight: FontWeight.w700,
-                                    color: d.isActive
-                                        ? _P.sage
-                                        : d.accent)),
+                            Text(
+                              d.status,
+                              style: _outfit(
+                                10,
+                                weight: FontWeight.w700,
+                                color: d.isActive ? _P.sage : d.accent,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -560,34 +584,48 @@ class _ModuleCardState extends State<_ModuleCard>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(d.title,
-                          style: _outfit(16,
-                              weight: FontWeight.w800,
-                              color: widget.isDark
-                                  ? Colors.white
-                                  : _P.navy,
-                              letterSpacing: -0.2)),
+                      Text(
+                        d.title,
+                        style: _outfit(
+                          16,
+                          weight: FontWeight.w800,
+                          color: widget.isDark ? Colors.white : _P.navy,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
                       const SizedBox(height: 5),
-                      Text(d.subtitle,
-                          style: _outfit(12.5,
-                              height: 1.45,
-                              color: widget.isDark
-                                  ? Colors.white.withValues(alpha: 0.52)
-                                  : Colors.black.withValues(alpha: 0.45))),
+                      Text(
+                        d.subtitle,
+                        style: _outfit(
+                          12.5,
+                          height: 1.45,
+                          color: widget.isDark
+                              ? Colors.white.withValues(alpha: 0.52)
+                              : Colors.black.withValues(alpha: 0.45),
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       // CTA chip
-                      Row(children: [
-                        Text(
+                      Row(
+                        children: [
+                          Text(
                             d.isActive ? 'Ir al módulo' : d.badge,
-                            style: _outfit(11.5,
-                                weight: FontWeight.w700,
-                                color: d.accent)),
-                        if (d.isActive) ...[
-                          const SizedBox(width: 4),
-                          Icon(Icons.arrow_forward_rounded,
-                              size: 12, color: d.accent),
+                            style: _outfit(
+                              11.5,
+                              weight: FontWeight.w700,
+                              color: d.accent,
+                            ),
+                          ),
+                          if (d.isActive) ...[
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 12,
+                              color: d.accent,
+                            ),
+                          ],
                         ],
-                      ]),
+                      ),
                     ],
                   ),
                 ),
@@ -607,28 +645,33 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      _StatTile(
+    return Row(
+      children: [
+        _StatTile(
           icon: Icons.quiz_outlined,
           label: 'Reactivos',
           value: '—',
           color: _P.sage,
-          isDark: isDark),
-      const SizedBox(width: 10),
-      _StatTile(
+          isDark: isDark,
+        ),
+        const SizedBox(width: 10),
+        _StatTile(
           icon: Icons.people_outline_rounded,
           label: 'Docentes',
           value: '—',
           color: _P.teal,
-          isDark: isDark),
-      const SizedBox(width: 10),
-      _StatTile(
+          isDark: isDark,
+        ),
+        const SizedBox(width: 10),
+        _StatTile(
           icon: Icons.layers_outlined,
           label: 'Dimensiones',
           value: '3',
           color: _P.amber,
-          isDark: isDark),
-    ]);
+          isDark: isDark,
+        ),
+      ],
+    );
   }
 }
 
@@ -656,24 +699,35 @@ class _StatTile extends StatelessWidget {
           color: color.withValues(alpha: isDark ? 0.12 : 0.07),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-              color: color.withValues(alpha: isDark ? 0.28 : 0.2)),
+            color: color.withValues(alpha: isDark ? 0.28 : 0.2),
+          ),
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(height: 8),
-          Text(value,
-              style: _outfit(20,
-                  weight: FontWeight.w800,
-                  color: isDark ? Colors.white : _P.navy,
-                  height: 1)),
-          const SizedBox(height: 2),
-          Text(label,
-              style: _outfit(10,
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.45)
-                      : Colors.black.withValues(alpha: 0.4))),
-        ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: _outfit(
+                20,
+                weight: FontWeight.w800,
+                color: isDark ? Colors.white : _P.navy,
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: _outfit(
+                10,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.45)
+                    : Colors.black.withValues(alpha: 0.4),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -686,43 +740,62 @@ class _QuickAccessSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      // Encabezado
-      Row(children: [
-        Container(
-          width: 4, height: 18,
-          decoration: BoxDecoration(
-              color: _P.amber, borderRadius: BorderRadius.circular(2)),
-        ),
-        const SizedBox(width: 10),
-        Text('Accesos rápidos',
-            style: _outfit(15,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Encabezado
+        Row(
+          children: [
+            Container(
+              width: 4,
+              height: 18,
+              decoration: BoxDecoration(
+                color: _P.amber,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Accesos rápidos',
+              style: _outfit(
+                15,
                 weight: FontWeight.w800,
                 color: isDark ? Colors.white : _P.navy,
-                letterSpacing: 0.2)),
-      ]),
-      const SizedBox(height: 14),
-      Wrap(spacing: 10, runSpacing: 10, children: [
-        _QChip(
-            icon: Icons.add_circle_outline_rounded,
-            label: 'Nuevo reactivo',
-            color: _P.sage,
-            isDark: isDark,
-            onTap: () => context.go('/gestion-preguntas')),
-        _QChip(
-            icon: Icons.filter_list_rounded,
-            label: 'Filtrar por dimensión',
-            color: _P.teal,
-            isDark: isDark,
-            onTap: () => context.go('/gestion-preguntas')),
-        _QChip(
-            icon: Icons.help_outline_rounded,
-            label: 'Ayuda del sistema',
-            color: _P.amber,
-            isDark: isDark,
-            onTap: () {}),
-      ]),
-    ]);
+                letterSpacing: 0.2,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [
+            _QChip(
+              icon: Icons.add_circle_outline_rounded,
+              label: 'Nuevo reactivo',
+              color: _P.sage,
+              isDark: isDark,
+              onTap: () => context.go('/gestion-preguntas'),
+            ),
+            _QChip(
+              icon: Icons.filter_list_rounded,
+              label: 'Filtrar por dimensión',
+              color: _P.teal,
+              isDark: isDark,
+              onTap: () => context.go('/gestion-preguntas'),
+            ),
+            _QChip(
+              icon: Icons.help_outline_rounded,
+              label: 'Ayuda del sistema',
+              color: _P.amber,
+              isDark: isDark,
+              onTap: () {},
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
@@ -747,22 +820,29 @@ class _QChip extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
           color: color.withValues(alpha: isDark ? 0.12 : 0.07),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-              color: color.withValues(alpha: isDark ? 0.28 : 0.2)),
+            color: color.withValues(alpha: isDark ? 0.28 : 0.2),
+          ),
         ),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 7),
-          Text(label,
-              style: _outfit(12.5,
-                  weight: FontWeight.w600,
-                  color: isDark ? Colors.white.withValues(alpha: 0.85) : _P.navy)),
-        ]),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 7),
+            Text(
+              label,
+              style: _outfit(
+                12.5,
+                weight: FontWeight.w600,
+                color: isDark ? Colors.white.withValues(alpha: 0.85) : _P.navy,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -776,33 +856,51 @@ class _FooterSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Divider(
+    return Column(
+      children: [
+        Divider(
           color: isDark
               ? Colors.white.withValues(alpha: 0.07)
-              : Colors.black.withValues(alpha: 0.07)),
-      const SizedBox(height: 16),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Sistema de Evaluación Docente v1.0',
-              style: _outfit(11,
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.28)
-                      : Colors.black.withValues(alpha: 0.28))),
-          TextButton.icon(
-            onPressed: onLogout,
-            icon: const Icon(Icons.exit_to_app_rounded,
-                color: AppColors.error, size: 14),
-            label: Text('Cerrar sesión',
-                style: _outfit(12.5,
-                    weight: FontWeight.w600, color: AppColors.error)),
-            style: TextButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
-          ),
-        ],
-      ),
-    ]);
+              : Colors.black.withValues(alpha: 0.07),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Sistema de Evaluación Docente v1.0',
+              style: _outfit(
+                11,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.28)
+                    : Colors.black.withValues(alpha: 0.28),
+              ),
+            ),
+            TextButton.icon(
+              onPressed: onLogout,
+              icon: const Icon(
+                Icons.exit_to_app_rounded,
+                color: AppColors.error,
+                size: 14,
+              ),
+              label: Text(
+                'Cerrar sesión',
+                style: _outfit(
+                  12.5,
+                  weight: FontWeight.w600,
+                  color: AppColors.error,
+                ),
+              ),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

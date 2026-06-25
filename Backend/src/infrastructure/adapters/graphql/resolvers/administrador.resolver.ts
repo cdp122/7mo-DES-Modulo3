@@ -14,7 +14,10 @@ export const administradorResolvers = {
     administradorActual: async (_: any, __: any, context: any) => {
       if (!context.administrador) return null;
       return administradorRepo.obtenerPorId(context.administrador.id);
-    }
+    },
+    buscarAdminPorCedula: async (_: any, { cedula }: { cedula: string }) => {
+      return administradorRepo.buscarPorCedula(cedula);
+    },
   },
   Mutation: {
     login: async (_: any, { input }: { input: LoginDTO }) => {

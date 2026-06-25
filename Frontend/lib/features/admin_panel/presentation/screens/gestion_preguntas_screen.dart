@@ -74,26 +74,21 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
     }
   }
 
-  void _mostrarExplicacionConexion(bool isUsingMock) {
+  void _mostrarExplicacionConexion() {
     showDialog(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Row(
+          title: const Row(
             children: [
-              Icon(
-                isUsingMock ? Icons.cloud_off_rounded : Icons.cloud_done_rounded,
-                color: isUsingMock ? Colors.amber.shade700 : AppColors.success,
-              ),
-              const SizedBox(width: 10),
-              const Text('Estado de la Conexión'),
+              Icon(Icons.cloud_done_rounded, color: AppColors.success),
+              SizedBox(width: 10),
+              Text('Estado de la Conexión'),
             ],
           ),
-          content: Text(
-            isUsingMock
-                ? 'La aplicación no pudo establecer contacto con el Backend local (puerto 4000). Se ha activado el Modo Local Simulado en memoria.\n\nPuedes agregar, editar y eliminar reactivos para pruebas locales, pero no se guardarán en MongoDB al reiniciar la app.'
-                : 'Conexión exitosa con el Backend (puerto 4000). Todos los cambios realizados en los reactivos se guardarán en tiempo real en la base de datos MongoDB.',
-            style: const TextStyle(fontSize: 14, height: 1.4),
+          content: const Text(
+            'Conexión activa con el Backend (puerto 4000). Todos los cambios realizados se guardan en tiempo real en la base de datos MongoDB.',
+            style: TextStyle(fontSize: 14, height: 1.4),
           ),
           actions: [
             TextButton(
@@ -157,12 +152,10 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
       },
       builder: (context, state) {
         List<DimensionEntity> dimensiones = [];
-        bool isUsingMock = false;
         bool isLoading = state is PreguntasLoading;
 
         if (state is PreguntasLoaded) {
           dimensiones = state.dimensiones;
-          isUsingMock = state.isUsingMock;
         }
 
         final dimD1 = dimensiones.firstWhere((d) => d.orden == 1, orElse: () => _emptyDimension(1));
@@ -179,17 +172,17 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
             actions: [
               // Connected / Offline status indicator badge
               GestureDetector(
-                onTap: () => _mostrarExplicacionConexion(isUsingMock),
+                onTap: () => _mostrarExplicacionConexion(),
                 child: MouseRegion(
                   cursor: SystemMouseCursors.click,
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isUsingMock ? Colors.amber.withOpacity(0.12) : AppColors.success.withOpacity(0.12),
+                      color: AppColors.success.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: isUsingMock ? Colors.amber.shade700 : AppColors.success,
+                        color: AppColors.success,
                         width: 1,
                       ),
                     ),
@@ -198,17 +191,15 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
                       children: [
                         CircleAvatar(
                           radius: 4,
-                          backgroundColor: isUsingMock ? Colors.amber.shade800 : AppColors.success,
+                          backgroundColor: AppColors.success,
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          isUsingMock ? 'Mock Offline' : 'Servidor Online',
+                          'Servidor Online',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: isUsingMock
-                                ? (isDark ? Colors.amber.shade200 : Colors.amber.shade900)
-                                : (isDark ? Colors.green.shade200 : Colors.green.shade900),
+                            color: isDark ? Colors.green.shade200 : Colors.green.shade900,
                           ),
                         ),
                       ],

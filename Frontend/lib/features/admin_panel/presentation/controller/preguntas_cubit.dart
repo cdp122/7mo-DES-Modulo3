@@ -14,7 +14,6 @@ class PreguntasCubit extends Cubit<PreguntasState> {
       final dims = await _repository.obtenerDimensiones();
       emit(PreguntasLoaded(
         dimensiones: dims,
-        isUsingMock: _repository.isUsingMock,
       ));
     } catch (e) {
       emit(PreguntasError(e.toString().replaceAll('Exception: ', '')));
@@ -33,7 +32,6 @@ class PreguntasCubit extends Cubit<PreguntasState> {
         final dims = await _repository.obtenerDimensiones();
         emit(PreguntasLoaded(
           dimensiones: dims,
-          isUsingMock: _repository.isUsingMock,
         ));
       } catch (e) {
         emit(PreguntasError(e.toString().replaceAll('Exception: ', '')));
@@ -55,7 +53,6 @@ class PreguntasCubit extends Cubit<PreguntasState> {
         final dims = await _repository.obtenerDimensiones();
         emit(PreguntasLoaded(
           dimensiones: dims,
-          isUsingMock: _repository.isUsingMock,
         ));
       } catch (e) {
         emit(PreguntasError(e.toString().replaceAll('Exception: ', '')));
@@ -76,7 +73,6 @@ class PreguntasCubit extends Cubit<PreguntasState> {
         final dims = await _repository.obtenerDimensiones();
         emit(PreguntasLoaded(
           dimensiones: dims,
-          isUsingMock: _repository.isUsingMock,
         ));
       } catch (e) {
         emit(PreguntasError(e.toString().replaceAll('Exception: ', '')));

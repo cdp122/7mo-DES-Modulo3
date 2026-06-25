@@ -14,7 +14,6 @@ class DimensionesCubit extends Cubit<DimensionesState> {
       final dims = await _repository.obtenerDimensiones();
       emit(DimensionesLoaded(
         dimensiones: dims,
-        isUsingMock: _repository.isUsingMock,
       ));
     } catch (e) {
       emit(DimensionesError(e.toString().replaceAll('Exception: ', '')));
@@ -43,7 +42,6 @@ class DimensionesCubit extends Cubit<DimensionesState> {
       emit(const DimensionActionSuccess('Dimensión creada correctamente.'));
       emit(DimensionesLoaded(
         dimensiones: dims,
-        isUsingMock: _repository.isUsingMock,
       ));
     } catch (e) {
       emit(DimensionesError(e.toString().replaceAll('Exception: ', '')));
@@ -68,7 +66,6 @@ class DimensionesCubit extends Cubit<DimensionesState> {
       emit(const DimensionActionSuccess('Dimensión actualizada correctamente.'));
       emit(DimensionesLoaded(
         dimensiones: dims,
-        isUsingMock: _repository.isUsingMock,
       ));
     } catch (e) {
       emit(DimensionesError(e.toString().replaceAll('Exception: ', '')));
@@ -83,7 +80,6 @@ class DimensionesCubit extends Cubit<DimensionesState> {
       emit(const DimensionActionSuccess('Dimensión eliminada correctamente.'));
       emit(DimensionesLoaded(
         dimensiones: dims,
-        isUsingMock: _repository.isUsingMock,
       ));
     } catch (e) {
       emit(DimensionesError(e.toString().replaceAll('Exception: ', '')));

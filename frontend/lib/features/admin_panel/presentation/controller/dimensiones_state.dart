@@ -14,11 +14,9 @@ class DimensionesLoading extends DimensionesState {
 
 class DimensionesLoaded extends DimensionesState {
   final List<DimensionEntity> dimensiones;
-  final bool isUsingMock;
 
   const DimensionesLoaded({
     required this.dimensiones,
-    required this.isUsingMock,
   });
 
   @override
@@ -26,11 +24,10 @@ class DimensionesLoaded extends DimensionesState {
       identical(this, other) ||
       other is DimensionesLoaded &&
           runtimeType == other.runtimeType &&
-          dimensiones == other.dimensiones &&
-          isUsingMock == other.isUsingMock;
+          dimensiones == other.dimensiones;
 
   @override
-  int get hashCode => dimensiones.hashCode ^ isUsingMock.hashCode;
+  int get hashCode => dimensiones.hashCode;
 }
 
 class DimensionesError extends DimensionesState {

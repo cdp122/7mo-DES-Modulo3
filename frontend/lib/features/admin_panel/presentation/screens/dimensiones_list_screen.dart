@@ -205,9 +205,7 @@ class _DimensionesListScreenState extends State<DimensionesListScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            state.isUsingMock
-                                ? 'Usando datos de demostración (sin conexión a servidor)'
-                                : 'Conectado al servidor',
+                            'Conectado al servidor',
                             style: GoogleFonts.outfit(
                               fontSize: 13,
                               color: const Color(0xFF2C86A0),

@@ -14,11 +14,9 @@ class PreguntasLoading extends PreguntasState {
 
 class PreguntasLoaded extends PreguntasState {
   final List<DimensionEntity> dimensiones;
-  final bool isUsingMock;
 
   const PreguntasLoaded({
     required this.dimensiones,
-    required this.isUsingMock,
   });
 
   @override
@@ -26,11 +24,10 @@ class PreguntasLoaded extends PreguntasState {
       identical(this, other) ||
       other is PreguntasLoaded &&
           runtimeType == other.runtimeType &&
-          dimensiones == other.dimensiones &&
-          isUsingMock == other.isUsingMock;
+          dimensiones == other.dimensiones;
 
   @override
-  int get hashCode => dimensiones.hashCode ^ isUsingMock.hashCode;
+  int get hashCode => dimensiones.hashCode;
 }
 
 class PreguntasError extends PreguntasState {
