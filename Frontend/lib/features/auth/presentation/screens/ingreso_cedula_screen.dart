@@ -66,11 +66,9 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                 usuario: state.usuario,
                 onResponderEncuesta: () {
                   context.read<AuthCubit>().elegirResponderEncuesta(state.usuario);
-                  Navigator.of(dialogContext).pop();
                 },
                 onPanelAdministracion: () {
                   context.read<AuthCubit>().elegirAccederPanelAdmin(state.usuario);
-                  Navigator.of(dialogContext).pop();
                 },
               ),
             );

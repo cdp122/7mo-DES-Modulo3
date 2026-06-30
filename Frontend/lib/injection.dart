@@ -8,8 +8,10 @@ import 'features/auth/domain/usecases/verificar_cedula.dart';
 import 'features/auth/domain/usecases/login_administrador.dart';
 import 'features/auth/presentation/controller/auth_controller.dart';
 import 'features/admin_panel/data/repositories/preguntas_repository.dart';
+import 'features/admin_panel/data/repositories/resultados_repository.dart';
 import 'features/admin_panel/presentation/controller/preguntas_cubit.dart';
 import 'features/admin_panel/presentation/controller/dimensiones_cubit.dart';
+import 'features/admin_panel/presentation/controller/resultados_cubit.dart';
 
 final sl = GetIt.instance; // sl stands for Service Locator
 
@@ -46,4 +48,8 @@ Future<void> init() async {
 
   // Features - Admin Panel (Dimensiones)
   sl.registerFactory(() => DimensionesCubit(sl()));
+
+  // Features - Admin Panel (Resultados)
+  sl.registerLazySingleton(() => ResultadosRepository(sl()));
+  sl.registerFactory(() => ResultadosCubit(sl()));
 }

@@ -1,4 +1,18 @@
-import { Respuesta, ResultadosEvaluacion } from '../models/evaluacion.model';
+import {
+  Respuesta,
+  ResultadosEvaluacion,
+  Evaluacion,
+  InterpretacionDimension,
+  ResultadosInterpretados,
+  ResumenGeneral,
+} from '../models/evaluacion.model';
+
+// ── Nombres de las 3 dimensiones del instrumento ────────────────
+const NOMBRES_DIMENSIONES: Record<string, string> = {
+  D1: 'Participación infantil',
+  D2: 'Voz del niño',
+  D3: 'Relación simétrica',
+};
 
 export class CalculosService {
   static readonly REACTIVOS_POR_DIMENSION = 5;
@@ -47,12 +61,15 @@ export class CalculosService {
     return 'D3';
   }
 
-  static mapearNivelCualitativo(igpp: number): string {
-    if (igpp >= 90) return 'Participación protagónica';
-    if (igpp >= 70) return 'Participación en desarrollo';
-    if (igpp >= 50) return 'Participación en consulta';
-    if (igpp >= 30) return 'Participación marginal';
-    return 'Sin participación';
+  /**
+   * Rúbrica de interpretación cualitativa.
+   * Aplica tanto al IGPP como a cada ID individual.
+   */
+  static mapearNivelCualitativo(porcentaje: number): string {
+    if (porcentaje >= 76) return 'Participación auténtica';
+    if (porcentaje >= 51) return 'Participación en desarrollo';
+    if (porcentaje >= 26) return 'Participación incipiente';
+    return 'Planificación adultocéntrica';
   }
 
   static calcularResultados(respuestas: Respuesta[]): ResultadosEvaluacion {
@@ -66,6 +83,134 @@ export class CalculosService {
       indices_dimensionales: indices,
       IGPP: Math.round(igpp * 100) / 100,
       dimension_prioritaria: dimensionPrioritaria,
+    };
+  }
+
+  // ── Nuevos métodos para métricas interpretadas ──────────────────
+
+  /**
+   * Interpreta los resultados de una evaluación individual.
+   * Devuelve puntajes, porcentajes y lectura cualitativa por dimensión + global.
+   */
+  static interpretarResultados(evaluacion: Evaluacion): ResultadosInterpretados {
+    const { subtotales, indices_dimensionales, IGPP, dimension_prioritaria } = evaluacion.resultados;
+
+    const dimensiones: InterpretacionDimension[] = [
+      {
+        nombre: NOMBRES_DIMENSIONES.D1,
+        clave: 'D1',
+        puntaje: subtotales.D1,
+        maximo: this.MAXIMO_POR_DIMENSION,
+        porcentaje: Math.round(indices_dimensionales.ID1 * 100) / 100,
+        nivel: this.mapearNivelCualitativo(indices_dimensionales.ID1),
+      },
+      {
+        nombre: NOMBRES_DIMENSIONES.D2,
+        clave: 'D2',
+        puntaje: subtotales.D2,
+        maximo: this.MAXIMO_POR_DIMENSION,
+        porcentaje: Math.round(indices_dimensionales.ID2 * 100) / 100,
+        nivel: this.mapearNivelCualitativo(indices_dimensionales.ID2),
+      },
+      {
+        nombre: NOMBRES_DIMENSIONES.D3,
+        clave: 'D3',
+        puntaje: subtotales.D3,
+        maximo: this.MAXIMO_POR_DIMENSION,
+        porcentaje: Math.round(indices_dimensionales.ID3 * 100) / 100,
+        nivel: this.mapearNivelCualitativo(indices_dimensionales.ID3),
+      },
+    ];
+
+    const puntajeTotal = subtotales.D1 + subtotales.D2 + subtotales.D3;
+
+    return {
+      evaluacion_id: evaluacion.id,
+      docente_cedula: evaluacion.datos_docente.cedula,
+      docente_nombre: evaluacion.datos_docente.nombre,
+      dimensiones,
+      puntaje_total: puntajeTotal,
+      maximo_total: this.MAXIMO_TOTAL,
+      IGPP: Math.round(IGPP * 100) / 100,
+      nivel_general: this.mapearNivelCualitativo(IGPP),
+      dimension_prioritaria: NOMBRES_DIMENSIONES[dimension_prioritaria] || dimension_prioritaria,
+    };
+  }
+
+  /**
+   * Calcula un resumen general a partir de todas las evaluaciones.
+   * Promedia subtotales y porcentajes de manera global.
+   */
+  static calcularResumenGeneral(evaluaciones: Evaluacion[]): ResumenGeneral {
+    const total = evaluaciones.length;
+
+    if (total === 0) {
+      return {
+        total_evaluaciones: 0,
+        promedio_D1: 0,
+        promedio_D2: 0,
+        promedio_D3: 0,
+        promedio_IGPP: 0,
+        nivel_general: this.mapearNivelCualitativo(0),
+        dimensiones: [
+          { nombre: NOMBRES_DIMENSIONES.D1, clave: 'D1', puntaje: 0, maximo: this.MAXIMO_POR_DIMENSION, porcentaje: 0, nivel: this.mapearNivelCualitativo(0) },
+          { nombre: NOMBRES_DIMENSIONES.D2, clave: 'D2', puntaje: 0, maximo: this.MAXIMO_POR_DIMENSION, porcentaje: 0, nivel: this.mapearNivelCualitativo(0) },
+          { nombre: NOMBRES_DIMENSIONES.D3, clave: 'D3', puntaje: 0, maximo: this.MAXIMO_POR_DIMENSION, porcentaje: 0, nivel: this.mapearNivelCualitativo(0) },
+        ],
+      };
+    }
+
+    let sumaD1 = 0, sumaD2 = 0, sumaD3 = 0, sumaIGPP = 0;
+
+    evaluaciones.forEach((ev) => {
+      sumaD1 += ev.resultados.subtotales.D1;
+      sumaD2 += ev.resultados.subtotales.D2;
+      sumaD3 += ev.resultados.subtotales.D3;
+      sumaIGPP += ev.resultados.IGPP;
+    });
+
+    const promD1 = sumaD1 / total;
+    const promD2 = sumaD2 / total;
+    const promD3 = sumaD3 / total;
+    const promIGPP = sumaIGPP / total;
+
+    const porcD1 = (promD1 / this.MAXIMO_POR_DIMENSION) * 100;
+    const porcD2 = (promD2 / this.MAXIMO_POR_DIMENSION) * 100;
+    const porcD3 = (promD3 / this.MAXIMO_POR_DIMENSION) * 100;
+
+    return {
+      total_evaluaciones: total,
+      promedio_D1: Math.round(promD1 * 100) / 100,
+      promedio_D2: Math.round(promD2 * 100) / 100,
+      promedio_D3: Math.round(promD3 * 100) / 100,
+      promedio_IGPP: Math.round(promIGPP * 100) / 100,
+      nivel_general: this.mapearNivelCualitativo(promIGPP),
+      dimensiones: [
+        {
+          nombre: NOMBRES_DIMENSIONES.D1,
+          clave: 'D1',
+          puntaje: Math.round(promD1 * 100) / 100,
+          maximo: this.MAXIMO_POR_DIMENSION,
+          porcentaje: Math.round(porcD1 * 100) / 100,
+          nivel: this.mapearNivelCualitativo(porcD1),
+        },
+        {
+          nombre: NOMBRES_DIMENSIONES.D2,
+          clave: 'D2',
+          puntaje: Math.round(promD2 * 100) / 100,
+          maximo: this.MAXIMO_POR_DIMENSION,
+          porcentaje: Math.round(porcD2 * 100) / 100,
+          nivel: this.mapearNivelCualitativo(porcD2),
+        },
+        {
+          nombre: NOMBRES_DIMENSIONES.D3,
+          clave: 'D3',
+          puntaje: Math.round(promD3 * 100) / 100,
+          maximo: this.MAXIMO_POR_DIMENSION,
+          porcentaje: Math.round(porcD3 * 100) / 100,
+          nivel: this.mapearNivelCualitativo(porcD3),
+        },
+      ],
     };
   }
 

@@ -41,6 +41,41 @@ type PromediosGlobales {
   IGPP: Float!
 }
 
+# ── Tipos para métricas interpretadas ────────────────────────────
+
+type InterpretacionDimension {
+  nombre: String!
+  clave: String!
+  puntaje: Float!
+  maximo: Float!
+  porcentaje: Float!
+  nivel: String!
+}
+
+type ResultadosInterpretados {
+  evaluacion_id: ID!
+  docente_cedula: String!
+  docente_nombre: String!
+  dimensiones: [InterpretacionDimension!]!
+  puntaje_total: Float!
+  maximo_total: Float!
+  IGPP: Float!
+  nivel_general: String!
+  dimension_prioritaria: String!
+}
+
+type ResumenGeneral {
+  total_evaluaciones: Int!
+  promedio_D1: Float!
+  promedio_D2: Float!
+  promedio_D3: Float!
+  promedio_IGPP: Float!
+  nivel_general: String!
+  dimensiones: [InterpretacionDimension!]!
+}
+
+# ── Inputs ───────────────────────────────────────────────────────
+
 input DatosDocenteInput {
   cedula: String!
   nombre: String!
@@ -56,11 +91,16 @@ input CrearEvaluacionInput {
   respuestas: [RespuestaInput!]!
 }
 
+# ── Queries y Mutations ─────────────────────────────────────────
+
 type Query {
   obtenerEvaluaciones: [Evaluacion!]!
   obtenerEvaluacion(id: ID!): Evaluacion
   obtenerEvaluacionesPorDocente(cedula: String!): [Evaluacion!]!
   obtenerPromediosGlobales: PromediosGlobales!
+  obtenerResultadosEvaluacion(id: ID!): ResultadosInterpretados
+  obtenerResultadosPorDocente(cedula: String!): [ResultadosInterpretados!]!
+  obtenerResumenGeneral: ResumenGeneral!
 }
 
 type Mutation {

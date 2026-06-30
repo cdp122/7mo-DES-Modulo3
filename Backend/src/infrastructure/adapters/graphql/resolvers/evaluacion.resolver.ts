@@ -17,7 +17,25 @@ export const evaluacionResolvers = {
     },
     obtenerPromediosGlobales: async () => {
       return evaluacionRepo.obtenerPromediosDimensionales();
-    }
+    },
+
+    // ── Nuevos queries de métricas interpretadas ──────────────────
+
+    obtenerResultadosEvaluacion: async (_: any, { id }: { id: string }) => {
+      const evaluacion = await evaluacionRepo.obtenerPorId(id);
+      if (!evaluacion) return null;
+      return CalculosService.interpretarResultados(evaluacion);
+    },
+
+    obtenerResultadosPorDocente: async (_: any, { cedula }: { cedula: string }) => {
+      const evaluaciones = await evaluacionRepo.obtenerPorDocenteCedula(cedula);
+      return evaluaciones.map((ev) => CalculosService.interpretarResultados(ev));
+    },
+
+    obtenerResumenGeneral: async () => {
+      const evaluaciones = await evaluacionRepo.obtenerTodas();
+      return CalculosService.calcularResumenGeneral(evaluaciones);
+    },
   },
   Mutation: {
     crearEvaluacion: async (_: any, { input }: { input: CrearEvaluacionDTO }) => {
