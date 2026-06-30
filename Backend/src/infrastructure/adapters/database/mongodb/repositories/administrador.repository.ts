@@ -4,13 +4,19 @@ import { AdministradorModel, IAdministradorDocument } from '../models/administra
 
 export class AdministradorRepository implements IAdministradorRepository {
   async buscarPorEmail(email: string): Promise<Administrador | null> {
-    const doc = await AdministradorModel.findOne({ email });
+    const doc = await AdministradorModel.findOne({
+      email,
+      $or: [{ rol: 'admin' }, { rol: { $exists: false } }]
+    });
     return this.mapearADominio(doc);
   }
 
   async buscarPorCedula(cedula: string): Promise<Administrador | null> {
-    // Solo devuelve si tiene rol 'admin' activo — para el flujo de autenticación
-    const doc = await AdministradorModel.findOne({ cedula, rol: 'admin' });
+    // Solo devuelve si tiene rol 'admin' activo o es legacy (sin rol definido)
+    const doc = await AdministradorModel.findOne({
+      cedula,
+      $or: [{ rol: 'admin' }, { rol: { $exists: false } }]
+    });
     return this.mapearADominio(doc);
   }
 
