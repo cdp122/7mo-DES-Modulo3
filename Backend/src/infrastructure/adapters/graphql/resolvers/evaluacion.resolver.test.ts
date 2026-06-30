@@ -54,10 +54,10 @@ const seedDimensiones = async () => {
       fundamento: 'Fundamento D1',
       reactivos: [
         { reactivo_codigo: '1.1', enunciado: 'Reactivo 1.1' },
-        { reactivo_codigo: '2.1', enunciado: 'Reactivo 2.1' },
-        { reactivo_codigo: '3.1', enunciado: 'Reactivo 3.1' },
-        { reactivo_codigo: '4.1', enunciado: 'Reactivo 4.1' },
-        { reactivo_codigo: '5.1', enunciado: 'Reactivo 5.1' }
+        { reactivo_codigo: '1.2', enunciado: 'Reactivo 1.2' },
+        { reactivo_codigo: '1.3', enunciado: 'Reactivo 1.3' },
+        { reactivo_codigo: '1.4', enunciado: 'Reactivo 1.4' },
+        { reactivo_codigo: '1.5', enunciado: 'Reactivo 1.5' }
       ],
       version: 'V6.6.22'
     },
@@ -67,11 +67,11 @@ const seedDimensiones = async () => {
       descripcion: 'Descripción D2',
       fundamento: 'Fundamento D2',
       reactivos: [
-        { reactivo_codigo: '6.1', enunciado: 'Reactivo 6.1' },
-        { reactivo_codigo: '7.1', enunciado: 'Reactivo 7.1' },
-        { reactivo_codigo: '8.1', enunciado: 'Reactivo 8.1' },
-        { reactivo_codigo: '9.1', enunciado: 'Reactivo 9.1' },
-        { reactivo_codigo: '10.1', enunciado: 'Reactivo 10.1' }
+        { reactivo_codigo: '2.1', enunciado: 'Reactivo 2.1' },
+        { reactivo_codigo: '2.2', enunciado: 'Reactivo 2.2' },
+        { reactivo_codigo: '2.3', enunciado: 'Reactivo 2.3' },
+        { reactivo_codigo: '2.4', enunciado: 'Reactivo 2.4' },
+        { reactivo_codigo: '2.5', enunciado: 'Reactivo 2.5' }
       ],
       version: 'V6.6.22'
     },
@@ -81,11 +81,11 @@ const seedDimensiones = async () => {
       descripcion: 'Descripción D3',
       fundamento: 'Fundamento D3',
       reactivos: [
-        { reactivo_codigo: '11.1', enunciado: 'Reactivo 11.1' },
-        { reactivo_codigo: '12.1', enunciado: 'Reactivo 12.1' },
-        { reactivo_codigo: '13.1', enunciado: 'Reactivo 13.1' },
-        { reactivo_codigo: '14.1', enunciado: 'Reactivo 14.1' },
-        { reactivo_codigo: '15.1', enunciado: 'Reactivo 15.1' }
+        { reactivo_codigo: '3.1', enunciado: 'Reactivo 3.1' },
+        { reactivo_codigo: '3.2', enunciado: 'Reactivo 3.2' },
+        { reactivo_codigo: '3.3', enunciado: 'Reactivo 3.3' },
+        { reactivo_codigo: '3.4', enunciado: 'Reactivo 3.4' },
+        { reactivo_codigo: '3.5', enunciado: 'Reactivo 3.5' }
       ],
       version: 'V6.6.22'
     }
@@ -105,8 +105,10 @@ describe('Evaluacion Resolver - CP-01 y CP-02', () => {
 
   it('CP-01: Debe crear evaluación con 15 respuestas válidas', async () => {
     const respuestas = [];
-    for (let i = 1; i <= 15; i++) {
-      respuestas.push({ reactivo_codigo: `${i}.1`, valor: 3 });
+    for (let dim = 1; dim <= 3; dim++) {
+      for (let req = 1; req <= 5; req++) {
+        respuestas.push({ reactivo_codigo: `${dim}.${req}`, valor: 3 });
+      }
     }
 
     const resultado = await servidorApollo.executeOperation(
@@ -153,7 +155,7 @@ describe('Evaluacion Resolver - CP-01 y CP-02', () => {
     expect(resultado.body.kind).toBe('single');
     if (resultado.body.kind === 'single') {
       expect(resultado.body.singleResult.errors).toBeUndefined();
-      const evaluacion = resultado.body.singleResult.data?.crearEvaluacion;
+      const evaluacion = resultado.body.singleResult.data?.crearEvaluacion as any;
       expect(evaluacion).toBeDefined();
       expect(evaluacion.datos_docente.cedula).toBe('1234567890');
       expect(evaluacion.respuestas).toHaveLength(15);
@@ -167,8 +169,10 @@ describe('Evaluacion Resolver - CP-01 y CP-02', () => {
 
   it('CP-02: Debe rechazar evaluación con menos de 15 respuestas', async () => {
     const respuestas = [];
-    for (let i = 1; i <= 10; i++) {
-      respuestas.push({ reactivo_codigo: `${i}.1`, valor: 2 });
+    for (let dim = 1; dim <= 2; dim++) {
+      for (let req = 1; req <= 5; req++) {
+        respuestas.push({ reactivo_codigo: `${dim}.${req}`, valor: 2 });
+      }
     }
 
     const resultado = await servidorApollo.executeOperation(

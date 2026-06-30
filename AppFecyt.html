@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Planificación | UTN-FECYT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700&display=swap');
+
+        :root {
+            /* PALETA DE COLORES PASTEL */
+            --primary: #9DBCFF;     
+            --primary-dark: #7A9FE6;
+            --secondary: #FFDD9E;   
+            --accent: #F1BDFF;      
+            --danger: #FEA3A2;      
+            --success: #C0FFD0;     
+            
+            --text-color: #2C3E50;
+            --text-dark: #1A252F;
+            --text-danger: #D84A49; 
+            --text-warning: #D68A00;
+            --text-success: #229954;
+            
+            --bg-color: #FAFCFF;    
+            --card-bg: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px 0;
+        }
+
+        /* Contenedor de Pantallas */
+        .app-container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            position: relative;
+            min-height: 550px;
+        }
+
+        .screen {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 12px 30px rgba(157, 188, 255, 0.15);
+            position: absolute;
+            width: calc(100% - 40px);
+            top: 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s;
+        }
+
+        .screen.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            position: relative;
+        }
+
+        /* Barra de Progreso Superior */
+        .progress-header {
+            display: none;
+            margin-bottom: 20px;
+            background: #EAECEE;
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Pantalla de Presentación */
+        .welcome-title {
+            font-size: 2.2rem;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            line-height: 1.2;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            color: #5D6D7E;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .notice-box {
+            background: #F4F8FF;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        /* Componentes de Pregunta */
+        .dim-subtitle {
+            text-align: center;
+            color: #5D6D7E;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #EAECEE;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text-dark);
+            text-align: center;
+            margin: 0;
+        }
+
+        /* Botón y Caja de Explicación */
+        .info-btn {
+            background: var(--secondary);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            box-shadow: 0 4px 6px rgba(255, 221, 158, 0.4);
+        }
+
+        .info-btn:hover {
+            transform: scale(1.1);
+            background: #F5D393;
+        }
+
+        .info-box {
+            background: #FFF9ED;
+            border: 2px solid var(--secondary);
+            color: #7E5109;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Escala Likert Horizontal (Grid) */
+        .type-cards {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 650px) {
+            .type-cards {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+        }
+
+        .card-option {
+            background: #F8F9F9;
+            border: 2px solid transparent;
+            padding: 20px 10px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .card-option:hover {
+            border-color: var(--primary);
+            background: #F2F6FF;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(157, 188, 255, 0.3);
+        }
+
+        .card-emoji { font-size: 2rem; line-height: 1; }
+        .card-label { font-weight: 600; font-size: 0.9rem; color: var(--text-color); line-height: 1.2; }
+        .card-val { font-weight: 700; color: #AAB7B8; font-size: 1.2rem; margin-top: 5px; }
+
+        /* Botones Generales */
+        .btn-main {
+            background: var(--primary);
+            color: var(--text-dark);
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 14px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s, transform 0.1s;
+            font-family: inherit;
+            box-shadow: 0 6px 12px rgba(157, 188, 255, 0.4);
+        }
+
+        .btn-main:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-main:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: #EAECEE;
+            color: #5D6D7E;
+            box-shadow: none;
+            margin-top: 15px;
+        }
+
+        .btn-secondary:hover {
+            background: #D5D8DC;
+        }
+
+        /* Pantalla de Resultados */
+        .result-score-box {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .big-igpp {
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1;
+            text-shadow: 2px 2px 0px var(--primary);
+        }
+
+        .baremo-tag {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--accent);
+            color: var(--text-dark);
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            box-shadow: 0 4px 8px rgba(241, 189, 255, 0.4);
+        }
+
+        /* Tarjetas Diagnósticas Dinámicas */
+        .diagnostic-card {
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border-left: 6px solid;
+        }
+
+        .diagnostic-card.critical { background: #FFF0F0; border-left-color: var(--danger); }
+        .diagnostic-card.warning { background: #FFF9ED; border-left-color: var(--secondary); }
+        .diagnostic-card.success { background: #F0FFF4; border-left-color: var(--success); }
+
+        .dim-report-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #E5E7E9;
+            font-size: 0.95rem;
+        }
+
+        .dim-report-row:last-child { border: none; }
+
+        /* Sección de Comentarios Personales */
+        .comment-section {
+            margin-top: 35px;
+            background: #F4F8FF;
+            padding: 20px;
+            border-radius: 16px;
+            border: 2px dashed var(--primary);
+        }
+
+        .comment-section h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-area {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #D5D8DC;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            margin-bottom: 15px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .comment-area:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 5px rgba(157, 188, 255, 0.5);
+        }
+
+        .btn-save {
+            background: var(--success);
+            color: var(--text-success);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(192, 255, 208, 0.5);
+        }
+
+        .btn-save:hover { background: #A3F3B7; }
+
+        .save-feedback {
+            display: none;
+            color: var(--text-success);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-left: 10px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .confeti {
+            position: fixed;
+            top: -20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 100;
+            animation: caer linear forwards;
+        }
+
+        @keyframes caer {
+            0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+            85%  { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Indicador de Progreso -->
+        <div class="progress-header" id="progressHeader">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- PANTALLA 1: PRESENTACIÓN -->
+        <div class="screen active" id="scr-welcome">
+            <div style="font-size: 3.5rem; margin-bottom: 15px; text-align: center;">👨‍🏫📚</div>
+            <h1 class="welcome-title">Ha llegado el momento  ayudamos a mejorar</h1>
+            <p class="welcome-text">Analiza de forma fácil si tu documento escrito toma en cuenta las voces y los derechos de los niños.</p>
+            
+            <div class="notice-box">
+                <strong>📌 Importante:</strong> Estamos revisando únicamente tu <strong>planificación didáctica escrita (tu documento guía)</strong>, no cómo diste la clase ni cómo se portaron los niños.
+            </div>
+
+            <button class="btn-main" onclick="startAssessment()">¡Comencemos! 🐻</button>
+        </div>
+
+        <!-- PANTALLA 2: CONTENEDOR DE PREGUNTAS DINÁMICAS -->
+        <div class="screen" id="scr-question">
+            <div class="dim-subtitle" id="display-dim">Dimensión 1</div>
+            
+            <div class="question-header">
+                <h2 class="question-text" id="display-q">Texto de la pregunta base</h2>
+                <button class="info-btn" onclick="toggleInfo()" title="¿Qué significa esto?">💡</button>
+            </div>
+
+            <!-- Caja de explicación oculta por defecto -->
+            <div class="info-box" id="display-info">
+                Aquí va la explicación de la pregunta.
+            </div>
+            
+            <!-- Contenedor Escala Likert Horizontal -->
+            <div id="input-container"></div>
+        </div>
+
+        <!-- PANTALLA 3: RESULTADOS FINALES -->
+        <div class="screen" id="scr-results">
+            <h2 style="font-weight: 700; text-align: center;">Diagnóstico Final del Documento</h2>
+            <p style="color: #7F8C8D; font-size: 0.9rem; text-align: center;">Resumen automático de tu evaluación</p>
+
+            <div class="result-score-box">
+                <div class="big-igpp" id="res-igpp">0%</div>
+                <div style="font-size: 0.85rem; color: #7F8C8D; text-transform: uppercase; font-weight: 600;">Puntaje Global de Participación</div>
+                <div class="baremo-tag" id="res-baremo">Cargando...</div>
+            </div>
+
+            <h3 style="margin-top: 20px; font-size: 1.1rem; border-bottom: 2px solid #F4F6F7; padding-bottom: 8px;">Tus resultados por cada área:</h3>
+            <div id="dimensions-breakdown"></div>
+
+            <!-- Diagnóstico automático -->
+            <div id="diagnostic-area">
+                <!-- Se inyectará dinámicamente -->
+            </div>
+
+            <!-- Sección para comentarios personales -->
+            <div class="comment-section">
+                <h3>📝 Mi compromiso personal de mejora</h3>
+                <p style="font-size: 0.85rem; color: #5D6D7E; margin-bottom: 10px;">Escribe aquí qué cambios harás en tu próxima planificación escrita basándote en estos resultados.</p>
+                <textarea class="comment-area" id="personalComment" placeholder="Ejemplo: A partir de hoy intentaré dejar más espacios libres para que los niños decidan cómo jugar..."></textarea>
+                <div style="display: flex; align-items: center;">
+                    <button class="btn-main btn-save" onclick="saveComment()" style="width: auto;">Guardar comentario</button>
+                    <span class="save-feedback" id="saveFeedback">¡Comentario guardado exitosamente! ✔️</span>
+                </div>
+            </div>
+
+            <!-- Sección para comentarios sobre el programa -->
+            <div class="comment-section">
+                <h3>💬 ¿Qué opino acerca del programa en general?</h3>
+                <p style="font-size: 0.85rem; color: #5D6D7E; margin-bottom: 10px;">Comparte tu opinión sobre la herramienta de evaluación, sugerencias de mejora o comentarios generales. Tu feedback nos ayuda a mejorar.</p>
+                <textarea class="comment-area" id="programComment" placeholder="Ejemplo: El programa es muy intuitivo, pero me gustaría que... o Muy útil para reflexionar sobre mi planificación..."></textarea>
+                <div style="display: flex; align-items: center;">
+                    <button class="btn-main btn-save" onclick="saveProgramComment()" style="width: auto;">Guardar opinión</button>
+                    <span class="save-feedback" id="saveFeedbackProgram">¡Opinión guardada exitosamente! ✔️</span>
+                </div>
+            </div>
+            
+            <button class="btn-main btn-secondary" onclick="location.reload()">Empezar una nueva evaluación 🔄</button>
+        </div>
+    </div>
+
+<script>
+    // PREGUNTAS MODIFICADAS: Todas empiezan con "La planificación" y hacen referencia al contexto de "Identidad y Autonomía"
+    const bancoPreguntas = [
+        // DIMENSIÓN 1: PARTICIPACIÓN INFANTIL
+        { 
+            id: 1, dim: 1, dimName: "Área 1: Participación Infantil", 
+            text: "1.1 La planificación incluye momentos concretos donde el niño puede explorar, decidir o actuar por sí mismo.", 
+            explicacion: "Verifica que el docente plantee momentos para que el niño explore, elija y participe activamente en las actividades " 
+        },
+        { 
+            id: 2, dim: 1, dimName: "Área 1: Participación Infantil", 
+            text: "1.2 La planificación permite que el maestro conozca las ideas y opiniones del niño.", 
+            explicacion: "Verifica que el docente proponga actividades que permitan a los niños expresar sus ideas, intereses, opiniones y experiencias durante el proceso de aprendizaje. " 
+        },
+        { 
+            id: 3, dim: 1, dimName: "Área 1: Participación Infantil", 
+            text: "1.3 La planificación dispone de tiempos, espacios y materiales para la participación de todos los niños.", 
+            explicacion: "¿De qué manera detalla el docente en el documento los recursos específicos (como las hojas bicolores, lápices, pictogramas) y la distribución del tiempo requerido tanto en casa como en el aula para el desarrollo de la actividad?" 
+        },
+        { 
+            id: 4, dim: 1, dimName: "Área 1: Participación Infantil", 
+            text: "1.4 La planificación permite que el niño participe en las actividades.", 
+            explicacion: "¿Cómo verifica el docente en el documento que el niño se mantenga activo, indagando en casa, socializando en el Mural Colectivo y armando rompecabezas a lo largo de las distintas sesiones?" 
+        },
+        { 
+            id: 5, dim: 1, dimName: "Área 1: Participación Infantil", 
+            text: "1.5 La planificación facilitó la participación de la familia.", 
+            explicacion: "¿De qué manera asegura el docente en el documento que se incluya una guía o mensaje claro para que los padres acompañen en casa, escuchen y anoten estrictamente lo que el niño les dicta sin cambiar sus respuestas?" 
+        },
+        
+        // DIMENSIÓN 2: VOZ DEL NIÑO
+        { 
+            id: 6, dim: 2, dimName: "Área 2: Voz del Niño", 
+            text: "2.1 La planificación incorpora preguntas mediadoras claras para conocer las opiniones, ideas y emociones del niño.", 
+            explicacion: '¿De qué manera incorpora el docente en el documento listados de preguntas específicas como "¿Qué cosas puedes hacer tú solito?" o "¿Cómo te sientes cuando lo logras?" para guiar la actividad?' 
+        },
+        { 
+            id: 7, dim: 2, dimName: "Área 2: Voz del Niño", 
+            text: "2.2 La planificación permite que el niño se exprese de diferentes maneras.", 
+            explicacion: "¿El plan menciona que los niños pueden expresarse pegando fotos de revistas, haciendo dibujos o usando pictogramas (fichas visuales) si aún no saben escribir?" 
+        },
+        { 
+            id: 8, dim: 2, dimName: "Área 2: Voz del Niño", 
+            text: "2.3 La planificación permite identificar lo que el niño expresa.", 
+            explicacion: "¿Cómo establece el docente en el plan que los niños puedan expresarse pegando fotos de revistas, haciendo dibujos o usando pictogramas (fichas visuales) si aún no saben escribir?" 
+        },
+        { 
+            id: 9, dim: 2, dimName: "Área 2: Voz del Niño", 
+            text: "2.4 La planificación permite escuchar lo que el niño opina.", 
+            explicacion: '¿De qué manera contempla el docente en la actividad planificada reunir las hojas exploradoras de todos para construir un "Mural Colectivo" visible en la clase?'
+        },
+        { 
+            id: 10, dim: 2, dimName: "Área 2: Voz del Niño", 
+            text: "2.5 La planificación permite que el niño sea escuchado sin cambiar su idea original.", 
+            explicacion: "¿De qué manera describe el docente en el documento el momento de socialización donde cada niño comparte con sus compañeros lo que descubrió que puede hacer solo o acompañado?" 
+        },
+
+        // DIMENSIÓN 3: RELACIÓN SIMÉTRICA
+        { 
+            id: 11, dim: 3, dimName: "Área 3: Relación Guiada", 
+            text: "3.1 La planificación permite que el maestro acompañe al niño.", 
+            explicacion: "¿De qué manera evidencia el docente en los pasos de la actividad la formulación de preguntas mediadoras para hacer pensar a los niños (por ejemplo, en los rompecabezas o secuencias) en lugar de simplemente darles la respuesta hecha?" 
+        },
+        { 
+            id: 12, dim: 3, dimName: "Área 3: Relación Guiada", 
+            text: "3.2 La planificación permite que el niño tome desiciones.",  
+            explicacion: "¿De qué manera evidencia el docente en el diseño de la actividad que se permite a los niños tomar decisiones autónomas, por ejemplo, al elegir por qué pieza empezar a armar su rompecabezas o cómo organizar su serie temporal?" 
+        },
+        { 
+            id: 13, dim: 3, dimName: "Área 3: Relación Guiada", 
+            text: "3.3 La planificación considera las ideas de los niños para enriquecer o modificar el desarrollo de las actividades.", 
+            explicacion: '¿De qué manera evidencia el docente en el plan que, al construir la "¿Conclusión Colectiva” del grupo, se abre la posibilidad de anotar ideas nuevas surgidas del diálogo con los niños que no estaban inicialmente en los pictogramas?' 
+        },
+        { 
+            id: 14, dim: 3, dimName: "Área 3: Relación Guiada", 
+            text: "3.4 La planificación reconoce al niño como un sujeto con autonomía niño.", 
+            explicacion: '¿De qué manera evidencia el docente en la redacción del documento técnico que se concibe al niño como un sujeto activo que construye y descubre (utilizando términos como "clasificar", "seriar" o "caracterizar") en lugar de un agente pasivo que solo memoriza?' 
+        },
+        { 
+            id: 15, dim: 3, dimName: "Área 3: Relación Guiada", 
+            text: "3.5 La planificación respeta la autonomía progresiva del niño.", 
+            explicacion: "¿De qué manera asegura el docente que el eje central de la actividad (identidad y autonomía) guíe al niño a reconocer y verbalizar sus propios límites frente a situaciones de riesgo?" 
+        }
+    ];
+
+    const escalaLikert = [
+        { v: 0, txt: "Ausente", emj: "🌑" },
+        { v: 1, txt: "Incipiente", emj: "🌱" },
+        { v: 2, txt: "En desarrollo", emj: "🌿" },
+        { v: 3, txt: "Logrado", emj: "🌳" },
+        { v: 4, txt: "Consolidado", emj: "🍎" }
+    ];
+
+    const colores = [
+        '#f857a6','#ff5858','#ffbe00','#00d2ff',
+        '#a8ff78','#ff9a9e','#c471f5','#fa71cd',
+        '#fd7f6f','#7eb0d5','#b2e061','#ffee65'
+    ];
+
+    let currentStep = 0;
+    let respuestasLog = [];
+
+    function startAssessment() {
+        transitionScreen("scr-welcome", "scr-question");
+        document.getElementById("progressHeader").style.display = "block";
+        renderQuestion();
+    }
+
+    function transitionScreen(fromId, toId) {
+        const fromScr = document.getElementById(fromId);
+        const toScr = document.getElementById(toId);
+
+        fromScr.style.opacity = "0";
+        fromScr.style.transform = "translateY(-20px)";
+        
+        setTimeout(() => {
+            fromScr.classList.remove("active");
+            toScr.classList.add("active");
+            void toScr.offsetWidth; 
+            toScr.style.opacity = "1";
+            toScr.style.transform = "translateY(0)";
+        }, 250);
+    }
+
+    function renderQuestion() {
+        if (currentStep >= bancoPreguntas.length) {
+            compileFinalStatistics();
+            return;
+        }
+
+        const q = bancoPreguntas[currentStep];
+        
+        document.getElementById("display-dim").innerText = q.dimName;
+        document.getElementById("display-q").innerText = q.text;
+        document.getElementById("display-info").innerText = q.explicacion;
+        document.getElementById("display-info").style.display = "none";
+
+        const container = document.getElementById("input-container");
+        let html = `<div class="type-cards">`;
+        
+        escalaLikert.forEach(opt => {
+            html += `
+                <div class="card-option" onclick="submitValue(${opt.v})">
+                    <span class="card-emoji">${opt.emj}</span>
+                    <span class="card-label">${opt.txt}</span>
+                    <span class="card-val">${opt.v}</span>
+                </div>
+            `;
+        });
+        
+        html += `</div>`;
+        container.innerHTML = html;
+
+        const pct = (currentStep / bancoPreguntas.length) * 100;
+        document.getElementById("progressBar").style.width = `${pct}%`;
+    }
+
+    function toggleInfo() {
+        const infoBox = document.getElementById("display-info");
+        if (infoBox.style.display === "none" || infoBox.style.display === "") {
+            infoBox.style.display = "block";
+        } else {
+            infoBox.style.display = "none";
+        }
+    }
+
+    function submitValue(value) {
+        const q = bancoPreguntas[currentStep];
+        respuestasLog.push({ dim: q.dim, score: parseInt(value) });
+        
+        currentStep++;
+        
+        const cardInner = document.getElementById("scr-question");
+        cardInner.style.opacity = "0";
+        cardInner.style.transform = "translateY(-15px)";
+        
+        setTimeout(() => {
+            renderQuestion();
+            cardInner.style.opacity = "1";
+            cardInner.style.transform = "translateY(0)";
+        }, 200);
+    }
+
+    function compileFinalStatistics() {
+        document.getElementById("progressHeader").style.display = "none";
+        
+        let sumTotal = 0;
+        let sumDim = { 1: 0, 2: 0, 3: 0 };
+
+        respuestasLog.forEach(r => {
+            sumTotal += r.score;
+            sumDim[r.dim] += r.score;
+        });
+
+        const id1 = (sumDim[1] / 20) * 100;
+        const id2 = (sumDim[2] / 20) * 100;
+        const id3 = (sumDim[3] / 20) * 100;
+        const igpp = (sumTotal / 60) * 100;
+
+        let baremoText = "";
+        if(igpp <= 25) baremoText = "🛑 Muy Adultocéntrica";
+        else if(igpp <= 50) baremoText = "⚠️ Participación Básica";
+        else if(igpp <= 75) baremoText = "🚀 Va por buen camino";
+        else baremoText = "🌟 Participación Auténtica";
+
+        document.getElementById("res-igpp").innerText = Math.round(igpp) + "%";
+        document.getElementById("res-baremo").innerText = baremoText;
+
+        const breakdownContainer = document.getElementById("dimensions-breakdown");
+        breakdownContainer.innerHTML = `
+            <div class="dim-report-row"><span>1. Participación Infantil</span><strong>${Math.round(id1)}%</strong></div>
+            <div class="dim-report-row"><span>2. Voz del Niño</span><strong>${Math.round(id2)}%</strong></div>
+            <div class="dim-report-row"><span>3. Relación Guiada</span><strong>${Math.round(id3)}%</strong></div>
+        `;
+
+        let minID = Math.min(id1, id2, id3);
+        let dimCritica = minID === id1 ? "Área 1 (Participación Infantil)" : 
+                         minID === id2 ? "Área 2 (Voz del Niño)" : 
+                                         "Área 3 (Relación Guiada)";
+
+        const diagArea = document.getElementById("diagnostic-area");
+        let diagnosticHTML = "";
+
+        if (igpp <= 25) {
+            diagArea.className = "diagnostic-card critical";
+            diagnosticHTML = `
+                <strong style="color: var(--text-danger); font-size: 1.1rem; display: block; margin-bottom: 5px;">🛑 Alerta: Rediseño Urgente Requerido</strong>
+                <p style="font-size: 0.95rem; color: #566573; line-height: 1.5;">
+                    El documento está pensado casi totalmente desde el punto de vista del adulto. Tu área más baja es la <strong>${dimCritica}</strong> con un <strong>${Math.round(minID)}%</strong>. ¡No te preocupes! Toma nota abajo para empezar a incluir más a los niños en tus próximas actividades.
+                </p>`;
+        } 
+        else if (igpp > 25 && igpp <= 75) {
+            diagArea.className = "diagnostic-card warning";
+            diagnosticHTML = `
+                <strong style="color: var(--text-warning); font-size: 1.1rem; display: block; margin-bottom: 5px;">⚠️ Oportunidad de Mejora</strong>
+                <p style="font-size: 0.95rem; color: #566573; line-height: 1.5;">
+                    Vas por muy buen camino, pero hay detalles que mejorar. El área en la que debes enfocarte más es la <strong>${dimCritica}</strong> con un <strong>${Math.round(minID)}%</strong>. Piensa en pequeños cambios que puedes hacer la próxima semana.
+                </p>`;
+        } 
+        else {
+            diagArea.className = "diagnostic-card success";
+            diagnosticHTML = `
+                <strong style="color: var(--text-success); font-size: 1.1rem; display: block; margin-bottom: 5px;">🌟 ¡Excelente Trabajo!</strong>
+                <p style="font-size: 0.95rem; color: #566573; line-height: 1.5;">
+                    Tu planificación es fantástica y toma muy en serio los derechos y opiniones de los niños. Para ser perfecta, podrías darle un último toque a la <strong>${dimCritica}</strong> (que obtuvo <strong>${Math.round(minID)}%</strong>). ¡Sigue así!
+                </p>`;
+        }
+
+        diagArea.innerHTML = diagnosticHTML;
+
+        transitionScreen("scr-question", "scr-results");
+        
+        // Lanzar confeti como en me_perdonas.html
+        setTimeout(() => {
+            lanzarConfeti(120);
+            for (let i = 0; i < 4; i++) {
+                setTimeout(() => lanzarConfeti(60), i * 700);
+            }
+        }, 500);
+    }
+
+    function saveComment() {
+        const textValue = document.getElementById("personalComment").value.trim();
+        if(textValue === "") {
+            alert("Por favor, escribe un compromiso de mejora antes de guardar.");
+            return;
+        }
+        
+        const feedback = document.getElementById("saveFeedback");
+        feedback.style.display = "inline-block";
+        
+        setTimeout(() => {
+            feedback.style.display = "none";
+        }, 3000);
+    }
+
+    function saveProgramComment() {
+        const textValue = document.getElementById("programComment").value.trim();
+        if(textValue === "") {
+            alert("Por favor, comparte tu opinión sobre el programa antes de guardar.");
+            return;
+        }
+        
+        const feedback = document.getElementById("saveFeedbackProgram");
+        feedback.style.display = "inline-block";
+        
+        setTimeout(() => {
+            feedback.style.display = "none";
+        }, 3000);
+    }
+
+    function lanzarConfeti(cantidad) {
+        for (let i = 0; i < cantidad; i++) {
+            setTimeout(() => {
+                const c = document.createElement('div');
+                c.classList.add('confeti');
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.background = colores[Math.floor(Math.random() * colores.length)];
+                c.style.width  = (8 + Math.random() * 10) + 'px';
+                c.style.height = (8 + Math.random() * 10) + 'px';
+                c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                c.style.animationDuration = (2.5 + Math.random() * 2.5) + 's';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 5500);
+            }, i * 35);
+        }
+    }
+</script>
+
+</body>
+</html>
