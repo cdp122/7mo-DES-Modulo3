@@ -70,10 +70,14 @@ export class CalculosService {
   }
 
   private static extraerDimension(codigoReactivo: string): 'D1' | 'D2' | 'D3' | null {
+    // Extrae el número antes del punto (ej. "2.1" -> 2)
     const numero = parseInt(codigoReactivo.split('.')[0], 10);
-    if (numero >= 1 && numero <= 5) return 'D1';
-    if (numero >= 6 && numero <= 10) return 'D2';
-    if (numero >= 11 && numero <= 15) return 'D3';
+    
+    // Asigna la dimensión según el número extraído
+    if (numero === 1) return 'D1';
+    if (numero === 2) return 'D2';
+    if (numero === 3) return 'D3';
+    
     return null;
   }
 }

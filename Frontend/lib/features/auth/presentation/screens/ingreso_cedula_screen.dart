@@ -25,7 +25,9 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      context.read<AuthCubit>().verificarCedula(_cedulaController.text);
+      // Oculta el teclado antes de enviar la petición
+      FocusScope.of(context).unfocus();
+      context.read<AuthCubit>().verificarCedula(_cedulaController.text.trim());
     }
   }
 
@@ -38,6 +40,7 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
+            ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
@@ -63,14 +66,17 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                 usuario: state.usuario,
                 onResponderEncuesta: () {
                   context.read<AuthCubit>().elegirResponderEncuesta(state.usuario);
+                  Navigator.of(dialogContext).pop();
                 },
                 onPanelAdministracion: () {
                   context.read<AuthCubit>().elegirAccederPanelAdmin(state.usuario);
+                  Navigator.of(dialogContext).pop();
                 },
               ),
             );
           } else if (state is AuthAuthenticatedUser) {
-            context.go('/encuesta');
+            // SOLUCIÓN AL FLUJO CONTINUO: Enviamos a la portada pasando la cédula
+            context.go('/portada', extra: _cedulaController.text.trim());
           } else if (state is AuthAdminPasswordPrompt) {
             context.go('/admin-contrasena', extra: state.usuario);
           }
@@ -100,7 +106,6 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                   // Vista Web / Tablet (Diseño Split Screen)
                   return Row(
                     children: [
-                      // Lado Izquierdo (Fondo diferenciado y logo grande)
                       Expanded(
                         flex: 1,
                         child: Container(
@@ -127,7 +132,7 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.1),
+                                    color: Colors.black.withOpacity(0.1),
                                     blurRadius: 24,
                                     offset: const Offset(0, 8),
                                   ),
@@ -142,7 +147,6 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                           ),
                         ),
                       ),
-                      // Lado Derecho (Formulario centrado sin logo repetido)
                       Expanded(
                         flex: 1,
                         child: Center(
@@ -158,7 +162,7 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                     ],
                   );
                 } else {
-                  // Vista Móvil (Tarjeta centrada con logo de tamaño controlado)
+                  // Vista Móvil (Tarjeta centrada con logo)
                   return Center(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -177,11 +181,10 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
     );
   }
 
-  // Componente de Tarjeta de Formulario reutilizable
   Widget _buildCard(BuildContext context, ThemeData theme, bool isDark, bool mostrarLogo) {
     return Card(
       elevation: isDark ? 8 : 4,
-      shadowColor: AppColors.primary.withValues(alpha: 0.08),
+      shadowColor: AppColors.primary.withOpacity(0.08),
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Form(
@@ -199,7 +202,7 @@ class _IngresoCedulaScreenState extends State<IngresoCedulaScreen> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),

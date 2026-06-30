@@ -2,8 +2,13 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../features/auth/presentation/screens/ingreso_cedula_screen.dart';
 import '../../features/auth/presentation/screens/contrasena_admin_screen.dart';
-import '../../features/encuesta/presentation/screens/responder_encuesta_screen.dart';
+
+import '../../features/encuesta/presentation/screens/portada_screen.dart';
+import '../../features/encuesta/presentation/screens/dimension_1_screen.dart';
+import '../../features/encuesta/presentation/screens/dimension_2_screen.dart';
+import '../../features/encuesta/presentation/screens/dimension_3_screen.dart';
 import '../../features/encuesta/presentation/screens/resultados_screen.dart';
+
 import '../../features/admin_panel/presentation/screens/panel_principal_screen.dart';
 import '../../features/admin_panel/presentation/screens/gestion_preguntas_screen.dart';
 import '../../features/admin_panel/presentation/screens/dimensiones_list_screen.dart';
@@ -26,19 +31,99 @@ class AppRouter {
         path: '/admin-contrasena',
         builder: (context, state) {
           final usuario = state.extra as Usuario?;
-          if (usuario == null) {
-            return const IngresoCedulaScreen();
-          }
+          if (usuario == null) return const IngresoCedulaScreen();
           return ContrasenaAdminScreen(usuario: usuario);
         },
       ),
       GoRoute(
-        path: '/encuesta',
-        builder: (context, state) => const ResponderEncuestaScreen(),
+        path: '/portada',
+        builder: (context, state) {
+          final cedula = state.extra as String?;
+          if (cedula == null || cedula.isEmpty) return const IngresoCedulaScreen();
+          return PortadaScreen(cedulaDocente: cedula);
+        },
+      ),
+      GoRoute(
+        path: '/encuesta/d1',
+        builder: (context, state) {
+          String? cedula;
+          Map<String, int>? respuestasAcumuladas;
+
+          // Hacemos el chequeo genérico de 'Map' sin forzar la firma genérica estricta en web
+          if (state.extra is String) {
+            cedula = state.extra as String;
+          } else if (state.extra is Map) {
+            final datos = state.extra as Map;
+            cedula = datos['cedula'] as String?;
+            respuestasAcumuladas = Map<String, int>.from(datos['respuestas'] as Map);
+          }
+
+          if (cedula == null || cedula.isEmpty) return const IngresoCedulaScreen();
+          
+          return BlocProvider<PreguntasCubit>(
+            create: (context) => sl<PreguntasCubit>()..cargarPreguntas(),
+            child: Dimension1Screen(
+              cedulaDocente: cedula,
+              respuestasAcumuladas: respuestasAcumuladas,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/encuesta/d2',
+        builder: (context, state) {
+          String? cedula;
+          Map<String, int>? respuestasAcumuladas;
+
+          if (state.extra is Map) {
+            final datos = state.extra as Map;
+            cedula = datos['cedula'] as String?;
+            respuestasAcumuladas = Map<String, int>.from(datos['respuestas'] as Map);
+          }
+
+          if (cedula == null || cedula.isEmpty) return const IngresoCedulaScreen();
+          
+          return BlocProvider<PreguntasCubit>(
+            create: (context) => sl<PreguntasCubit>()..cargarPreguntas(),
+            child: Dimension2Screen(
+              cedulaDocente: cedula,
+              respuestasAcumuladas: respuestasAcumuladas ?? const {},
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/encuesta/d3',
+        builder: (context, state) {
+          String? cedula;
+          Map<String, int>? respuestasAcumuladas;
+
+          if (state.extra is Map) {
+            final datos = state.extra as Map;
+            cedula = datos['cedula'] as String?;
+            respuestasAcumuladas = Map<String, int>.from(datos['respuestas'] as Map);
+          }
+
+          if (cedula == null || cedula.isEmpty) return const IngresoCedulaScreen();
+          
+          return BlocProvider<PreguntasCubit>(
+            create: (context) => sl<PreguntasCubit>()..cargarPreguntas(),
+            child: Dimension3Screen(
+              cedulaDocente: cedula,
+              respuestasAcumuladas: respuestasAcumuladas ?? const {},
+            ),
+          );
+        },
       ),
       GoRoute(
         path: '/encuesta-resultados',
-        builder: (context, state) => const ResultadosScreen(),
+        builder: (context, state) {
+          if (state.extra is Map) {
+            final datos = state.extra as Map;
+            return ResultadosScreen(resultadoscompletos: Map<String, dynamic>.from(datos));
+          }
+          return const IngresoCedulaScreen();
+        },
       ),
       GoRoute(
         path: '/admin-panel',
@@ -62,9 +147,7 @@ class AppRouter {
         path: '/admin/dimensiones/:id',
         builder: (context, state) {
           final dimension = state.extra as DimensionEntity?;
-          if (dimension == null) {
-            return const DimensionesListScreen();
-          }
+          if (dimension == null) return const DimensionesListScreen();
           return DimensionDetailScreen(dimension: dimension);
         },
       ),
