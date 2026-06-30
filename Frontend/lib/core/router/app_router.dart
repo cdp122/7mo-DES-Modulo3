@@ -17,6 +17,8 @@ import '../../features/admin_panel/presentation/controller/preguntas_cubit.dart'
 import '../../features/admin_panel/presentation/controller/dimensiones_cubit.dart';
 import '../../features/admin_panel/presentation/controller/resultados_cubit.dart';
 import '../../features/admin_panel/presentation/screens/resultados_admin_screen.dart';
+import '../../features/admin_panel/presentation/controller/administradores_cubit.dart';
+import '../../features/admin_panel/presentation/screens/administradores_screen.dart';
 import '../../features/admin_panel/domain/entities/dimension.dart';
 import '../../features/auth/domain/entities/usuario.dart';
 import '../../injection.dart';
@@ -150,6 +152,13 @@ class AppRouter {
         builder: (context, state) => BlocProvider<ResultadosCubit>(
           create: (context) => sl<ResultadosCubit>(),
           child: const ResultadosAdminScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/administradores',
+        builder: (context, state) => BlocProvider<AdministradoresCubit>(
+          create: (context) => sl<AdministradoresCubit>(),
+          child: const AdministradoresScreen(),
         ),
       ),
       GoRoute(

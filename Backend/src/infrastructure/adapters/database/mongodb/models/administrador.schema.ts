@@ -5,6 +5,7 @@ export interface IAdministradorDocument extends Document {
   nombre: string;
   email: string;
   password: string;
+  rol: string;
   version: string;
 }
 
@@ -13,6 +14,7 @@ const AdministradorSchema = new Schema<IAdministradorDocument>({
   nombre: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  rol: { type: String, default: 'admin', enum: ['admin', 'docente'] },
   version: { type: String, default: 'V6.6.24b' }
 }, {
   timestamps: true,

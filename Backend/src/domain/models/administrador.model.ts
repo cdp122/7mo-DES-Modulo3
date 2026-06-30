@@ -4,6 +4,7 @@ export interface Administrador {
   nombre: string;
   email: string;
   password: string;
+  rol: string; // 'admin' | 'docente'
   version: string;
 }
 
@@ -12,6 +13,12 @@ export interface CrearAdministradorDTO {
   nombre: string;
   email: string;
   password: string;
+}
+
+export interface ActualizarAdministradorDTO {
+  nombre?: string;
+  email?: string;
+  password?: string; // pre-hashed by the resolver if provided
 }
 
 export interface LoginDTO {

@@ -3,6 +3,7 @@ type Administrador {
   cedula: String!
   nombre: String!
   email: String!
+  rol: String!
 }
 
 type AuthPayload {
@@ -22,7 +23,14 @@ input CrearAdministradorInput {
   password: String!
 }
 
+input ActualizarAdministradorInput {
+  nombre: String
+  email: String
+  password: String
+}
+
 type Query {
+  obtenerAdministradores: [Administrador!]!
   obtenerAdministrador(id: ID!): Administrador
   administradorActual: Administrador
   buscarAdminPorCedula(cedula: String!): Administrador
@@ -31,4 +39,6 @@ type Query {
 type Mutation {
   login(input: LoginInput!): AuthPayload!
   crearAdministrador(input: CrearAdministradorInput!): Administrador!
+  actualizarAdministrador(id: ID!, input: ActualizarAdministradorInput!): Administrador!
+  cambiarRolAdministrador(id: ID!, nuevoRol: String!): Administrador!
 }

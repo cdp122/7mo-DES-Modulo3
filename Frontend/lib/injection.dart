@@ -12,6 +12,8 @@ import 'features/admin_panel/data/repositories/resultados_repository.dart';
 import 'features/admin_panel/presentation/controller/preguntas_cubit.dart';
 import 'features/admin_panel/presentation/controller/dimensiones_cubit.dart';
 import 'features/admin_panel/presentation/controller/resultados_cubit.dart';
+import 'features/admin_panel/data/repositories/administradores_repository.dart';
+import 'features/admin_panel/presentation/controller/administradores_cubit.dart';
 
 final sl = GetIt.instance; // sl stands for Service Locator
 
@@ -52,4 +54,8 @@ Future<void> init() async {
   // Features - Admin Panel (Resultados)
   sl.registerLazySingleton(() => ResultadosRepository(sl()));
   sl.registerFactory(() => ResultadosCubit(sl()));
+
+  // Features - Admin Panel (Administradores)
+  sl.registerLazySingleton(() => AdministradoresRepository(sl()));
+  sl.registerFactory(() => AdministradoresCubit(sl()));
 }

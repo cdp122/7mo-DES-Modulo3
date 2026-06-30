@@ -1,5 +1,5 @@
 import { IAdministradorRepository } from '../../../../../domain/repositories/administrador.repository.port';
-import { Administrador } from '../../../../../domain/models/administrador.model';
+import { Administrador, ActualizarAdministradorDTO } from '../../../../../domain/models/administrador.model';
 import { AdministradorModel, IAdministradorDocument } from '../models/administrador.schema';
 
 export class AdministradorRepository implements IAdministradorRepository {
@@ -9,7 +9,8 @@ export class AdministradorRepository implements IAdministradorRepository {
   }
 
   async buscarPorCedula(cedula: string): Promise<Administrador | null> {
-    const doc = await AdministradorModel.findOne({ cedula });
+    // Solo devuelve si tiene rol 'admin' activo — para el flujo de autenticación
+    const doc = await AdministradorModel.findOne({ cedula, rol: 'admin' });
     return this.mapearADominio(doc);
   }
 
@@ -24,6 +25,29 @@ export class AdministradorRepository implements IAdministradorRepository {
     return this.mapearADominio(doc);
   }
 
+  async obtenerTodos(): Promise<Administrador[]> {
+    const docs = await AdministradorModel.find().sort({ nombre: 1 });
+    return docs.map(doc => this.mapearADominio(doc)).filter((a): a is Administrador => a !== null);
+  }
+
+  async actualizar(id: string, datos: ActualizarAdministradorDTO): Promise<Administrador | null> {
+    const doc = await AdministradorModel.findByIdAndUpdate(
+      id,
+      { $set: datos },
+      { new: true }
+    );
+    return this.mapearADominio(doc);
+  }
+
+  async cambiarRol(id: string, nuevoRol: string): Promise<Administrador | null> {
+    const doc = await AdministradorModel.findByIdAndUpdate(
+      id,
+      { $set: { rol: nuevoRol } },
+      { new: true }
+    );
+    return this.mapearADominio(doc);
+  }
+
   private mapearADominio(doc: IAdministradorDocument | null): Administrador | null {
     if (!doc) return null;
     return {
@@ -32,6 +56,7 @@ export class AdministradorRepository implements IAdministradorRepository {
       nombre: doc.nombre,
       email: doc.email,
       password: doc.password,
+      rol: doc.rol || 'admin',
       version: doc.version
     };
   }

@@ -77,10 +77,10 @@ class PanelPrincipalScreen extends StatelessWidget {
         title: 'Administradores',
         subtitle: 'Registrar cuentas y gestionar credenciales de acceso.',
         accent: _P.terracotta,
-        badge: 'Próximamente',
-        status: 'En desarrollo',
-        isActive: false,
-        onTap: () => _dlgProximamente(context, 'Gestión de Administradores'),
+        badge: 'CRUD',
+        status: 'Activo',
+        isActive: true,
+        onTap: () => context.go('/admin/administradores'),
       ),
     ];
 
@@ -347,54 +347,8 @@ class PanelPrincipalScreen extends StatelessWidget {
     );
   }
 
-  void _dlgProximamente(BuildContext context, String nombre) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: _P.amber.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.construction_rounded,
-                color: _P.amber,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(nombre, style: _outfit(15, weight: FontWeight.w700)),
-            ),
-          ],
-        ),
-        content: Text(
-          'Este módulo está en desarrollo y estará disponible próximamente.',
-          style: _outfit(14, height: 1.6, color: AppColors.textSecondaryLight),
-        ),
-        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _P.navy,
-              foregroundColor: Colors.white,
-              elevation: 0,
-            ),
-            child: Text(
-              'Entendido',
-              style: _outfit(14, weight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
+
 
 // ── Modelo de datos de tarjeta ───────────────────────────────────
 class _CardData {
