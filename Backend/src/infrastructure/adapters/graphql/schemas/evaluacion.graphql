@@ -1,11 +1,13 @@
-type DatosDocente {
-  cedula: String!
-  nombre: String!
-}
+scalar CedulaEcuatoriana
 
 type Respuesta {
   reactivo_codigo: String!
   valor: Int!
+}
+
+type Comentarios {
+  compromiso_personal: String
+  opiniones_programa: String
 }
 
 type Subtotales {
@@ -29,8 +31,9 @@ type ResultadosEvaluacion {
 
 type Evaluacion {
   id: ID!
-  datos_docente: DatosDocente!
+  cedula_docente: CedulaEcuatoriana!
   respuestas: [Respuesta!]!
+  comentarios: Comentarios
   resultados: ResultadosEvaluacion!
 }
 
@@ -54,8 +57,7 @@ type InterpretacionDimension {
 
 type ResultadosInterpretados {
   evaluacion_id: ID!
-  docente_cedula: String!
-  docente_nombre: String!
+  docente_cedula: CedulaEcuatoriana!
   dimensiones: [InterpretacionDimension!]!
   puntaje_total: Float!
   maximo_total: Float!
@@ -76,18 +78,18 @@ type ResumenGeneral {
 
 # ── Inputs ───────────────────────────────────────────────────────
 
-input DatosDocenteInput {
-  cedula: String!
-  nombre: String!
-}
-
 input RespuestaInput {
   reactivo_codigo: String!
   valor: Int!
 }
 
+input ComentariosInput {
+  compromiso_personal: String
+  opiniones_programa: String
+}
+
 input CrearEvaluacionInput {
-  datos_docente: DatosDocenteInput!
+  cedula_docente: CedulaEcuatoriana!
   respuestas: [RespuestaInput!]!
 }
 
@@ -96,13 +98,14 @@ input CrearEvaluacionInput {
 type Query {
   obtenerEvaluaciones: [Evaluacion!]!
   obtenerEvaluacion(id: ID!): Evaluacion
-  obtenerEvaluacionesPorDocente(cedula: String!): [Evaluacion!]!
+  obtenerEvaluacionesPorDocente(cedula: CedulaEcuatoriana!): [Evaluacion!]!
   obtenerPromediosGlobales: PromediosGlobales!
   obtenerResultadosEvaluacion(id: ID!): ResultadosInterpretados
-  obtenerResultadosPorDocente(cedula: String!): [ResultadosInterpretados!]!
+  obtenerResultadosPorDocente(cedula: CedulaEcuatoriana!): [ResultadosInterpretados!]!
   obtenerResumenGeneral: ResumenGeneral!
 }
 
 type Mutation {
   crearEvaluacion(input: CrearEvaluacionInput!): Evaluacion!
+  agregarComentarios(evaluacionId: ID!, input: ComentariosInput!): Evaluacion!
 }

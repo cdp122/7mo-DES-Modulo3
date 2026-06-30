@@ -1,9 +1,9 @@
+scalar CedulaEcuatoriana
+
 type Administrador {
   id: ID!
-  cedula: String!
+  cedula: CedulaEcuatoriana!
   nombre: String!
-  email: String!
-  rol: String!
 }
 
 type AuthPayload {
@@ -12,20 +12,18 @@ type AuthPayload {
 }
 
 input LoginInput {
-  email: String!
+  cedula: CedulaEcuatoriana!
   password: String!
 }
 
 input CrearAdministradorInput {
-  cedula: String!
+  cedula: CedulaEcuatoriana!
   nombre: String!
-  email: String!
   password: String!
 }
 
 input ActualizarAdministradorInput {
   nombre: String
-  email: String
   password: String
 }
 
@@ -33,12 +31,11 @@ type Query {
   obtenerAdministradores: [Administrador!]!
   obtenerAdministrador(id: ID!): Administrador
   administradorActual: Administrador
-  buscarAdminPorCedula(cedula: String!): Administrador
+  buscarAdminPorCedula(cedula: CedulaEcuatoriana!): Administrador
 }
 
 type Mutation {
   login(input: LoginInput!): AuthPayload!
   crearAdministrador(input: CrearAdministradorInput!): Administrador!
   actualizarAdministrador(id: ID!, input: ActualizarAdministradorInput!): Administrador!
-  cambiarRolAdministrador(id: ID!, nuevoRol: String!): Administrador!
 }

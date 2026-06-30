@@ -1,0 +1,33 @@
+@startuml Diagrama_Proceso_Docente_Swimlanes
+|#E3F2FD|Docente|
+start
+:Docente inicia sesión;
+:Solicitar reactivos de evaluación;
+
+|#E8F5E9|Sistema|
+:Cargar Reactivos desde MongoDB;
+:Desplegar los 15 reactivos organizados en 3 dimensiones;
+note left: Escala ordinal de 0 a 4 
+
+|Docente|
+repeat
+    :Responder reactivo mediante interfaz GraphQL;
+|Sistema|
+backward:Notificar reactivo pendiente;
+repeat while (¿Se respondieron los 15 ítems de forma obligatoria?) is (no) not (sí)
+
+|Docente|
+:Enviar mutación GraphQL con las respuestas;
+
+|Sistema|
+:Calcular subtotales por dimensión (ΣD);
+:Calcular Índices Dimensionales (ID = [ΣD / 20] * 100);
+:Calcular Índice Global (IGPP = [Σtotal / 60] * 100);
+:Determinar Dimensión con menor ID (Prioritaria);
+:Mapear nivel cualitativo según Baremo;
+:Persistir Evaluación en MongoDB (BDD);
+
+|Sistema|
+:Desplegar Perfil Diagnóstico y Alerta de Dimensión Crítica en pantalla;
+stop
+@enduml

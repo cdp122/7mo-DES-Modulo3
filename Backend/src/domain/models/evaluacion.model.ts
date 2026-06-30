@@ -3,6 +3,11 @@ export interface Respuesta {
   valor: number;
 }
 
+export interface Comentarios {
+  compromiso_personal: string | null;
+  opiniones_programa: string | null;
+}
+
 export interface ResultadosEvaluacion {
   subtotales: {
     D1: number;
@@ -18,22 +23,23 @@ export interface ResultadosEvaluacion {
   dimension_prioritaria: string;
 }
 
-export interface DatosDocente {
-  cedula: string;
-  nombre: string;
-}
-
 export interface Evaluacion {
   id: string;
-  datos_docente: DatosDocente;
+  cedula_docente: string;
   respuestas: Respuesta[];
+  comentarios: Comentarios;
   resultados: ResultadosEvaluacion;
   version: string;
 }
 
 export interface CrearEvaluacionDTO {
-  datos_docente: DatosDocente;
+  cedula_docente: string;
   respuestas: Respuesta[];
+}
+
+export interface ComentarEvaluacionDTO {
+  compromiso_personal?: string | null;
+  opiniones_programa?: string | null;
 }
 
 // ── Tipos para la interpretación de resultados ──────────────────
@@ -50,7 +56,6 @@ export interface InterpretacionDimension {
 export interface ResultadosInterpretados {
   evaluacion_id: string;
   docente_cedula: string;
-  docente_nombre: string;
   dimensiones: InterpretacionDimension[];
   puntaje_total: number;
   maximo_total: number;

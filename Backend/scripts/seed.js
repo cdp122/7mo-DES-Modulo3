@@ -7,9 +7,8 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/evalua
 const ADMIN = {
   cedula: '1002003000',
   nombre: 'Administrador General',
-  email: 'admin@sistema.edu.co',
   password: '$2b$10$0AjH.JmzYmeRYOSoWPhxqevf1rZ1cQyL2RBsExqkRCCGqX.kAEjiy',
-  version: 'V6.6.22',
+  version: 'V6.6.30',
 };
 
 const DIMENSIONES = [
@@ -21,28 +20,28 @@ const DIMENSIONES = [
     reactivos: [
       {
         reactivo_codigo: '1.1',
-        enunciado: 'La planificación contempla momentos concretos en los que el niño explora, decide o actúa según su propio criterio.',
-        pista: 'Revisar si el documento permite que el niño pueda, por ejemplo, aportar a la Hoja Exploradora o elegir qué representar.',
+        enunciado: 'La planificación incluye momentos concretos donde el niño puede explorar, decidir o actuar por sí mismo.',
+        pista: 'Verifica que el docente plantee momentos para que el niño explore, elija y participe activamente en las actividades',
       },
       {
         reactivo_codigo: '1.2',
-        enunciado: 'Las actividades permiten que el niño genere contenidos o respuestas propias.',
-        pista: 'Verificar que el niño no se limite solo a ejecutar consignas predefinidas por el adulto.',
+        enunciado: 'La planificación permite que el maestro conozca las ideas y opiniones del niño.',
+        pista: 'Verifica que el docente proponga actividades que permitan a los niños expresar sus ideas, intereses, opiniones y experiencias durante el proceso de aprendizaje.',
       },
       {
         reactivo_codigo: '1.3',
-        enunciado: 'Se prevén tiempos, espacios y recursos suficientes para que todos los niños puedan participar.',
-        pista: 'Identificar si se contemplan materiales accesibles y una adecuada organización del aula y del hogar.',
+        enunciado: 'La planificación dispone de tiempos, espacios y materiales para la participación de todos los niños.',
+        pista: '¿De qué manera detalla el docente en el documento los recursos específicos (como las hojas bicolores, lápices, pictogramas) y la distribución del tiempo requerido tanto en casa como en el aula para el desarrollo de la actividad?',
       },
       {
         reactivo_codigo: '1.4',
-        enunciado: 'La participación del niño está presente en más de un momento de la secuencia.',
-        pista: 'Comprobar si dicha participación ocurre en momentos como el lanzamiento, la indagación o la socialización, y no solo al inicio o al final.',
+        enunciado: 'La planificación permite que el niño participe en las actividades.',
+        pista: '¿Cómo verifica el docente en el documento que el niño se mantenga activo, indagando en casa, socializando en el Mural Colectivo y armando rompecabezas a lo largo de las distintas sesiones?',
       },
       {
         reactivo_codigo: '1.5',
-        enunciado: 'La planificación amplía el espacio participativo al entorno familiar.',
-        pista: 'Observar si se involucra a la familia como mediadora de la voz del niño.',
+        enunciado: 'La planificación facilitó la participación de la familia.',
+        pista: '¿De qué manera asegura el docente en el documento que se incluya una guía o mensaje claro para que los padres acompañen en casa, escuchen y anoten estrictamente lo que el niño les dicta sin cambiar sus respuestas?',
       },
     ],
     version: 'V6.6.22',
@@ -55,28 +54,28 @@ const DIMENSIONES = [
     reactivos: [
       {
         reactivo_codigo: '2.1',
-        enunciado: 'La planificación incorpora preguntas mediadoras o estrategias explícitas para recoger las opiniones, ideas y emociones del niño.',
-        pista: 'Identificar en la redacción la presencia de estas preguntas o estrategias de escucha.',
+        enunciado: 'La planificación incorpora preguntas mediadoras claras para conocer las opiniones, ideas y emociones del niño.',
+        pista: '¿De qué manera incorpora el docente en el documento listados de preguntas específicas como "¿Qué cosas puedes hacer tú solito?" o "¿Cómo te sientes cuando lo logras?" para guiar la actividad?',
       },
       {
         reactivo_codigo: '2.2',
-        enunciado: 'Se prevén medios de expresión accesibles para niños que aún no leen ni escriben.',
-        pista: 'Buscar si se promueve el uso del dibujo, pictogramas, oralidad o dramatización.',
+        enunciado: 'La planificación permite que el niño se exprese de diferentes maneras.',
+        pista: '¿El plan menciona que los niños pueden expresarse pegando fotos de revistas, haciendo dibujos o usando pictogramas (fichas visuales) si aún no saben escribir?',
       },
       {
         reactivo_codigo: '2.3',
-        enunciado: 'Se contempla registrar o documentar lo que el niño expresa, de modo que su voz quede visible.',
-        pista: 'Revisar si el documento incluye el uso de la hoja exploradora, un mural o una ficha de observación para este fin.',
+        enunciado: 'La planificación permite identificar lo que el niño expresa.',
+        pista: '¿Cómo establece el docente en el plan que los niños puedan expresarse pegando fotos de revistas, haciendo dibujos o usando pictogramas (fichas visuales) si aún no saben escribir?',
       },
       {
         reactivo_codigo: '2.4',
-        enunciado: 'Las expresiones del niño tienen una audiencia real: se prevén instancias en las que alguien las escucha y las considera.',
-        pista: 'Analizar si las voces son escuchadas y tomadas en cuenta por el docente, el grupo o la familia.',
+        enunciado: 'La planificación permite escuchar lo que el niño opina.',
+        pista: '¿De qué manera contempla el docente en la actividad planificada reunir las hojas exploradoras de todos para construir un "Mural Colectivo" visible en la clase?',
       },
       {
         reactivo_codigo: '2.5',
-        enunciado: 'La planificación orienta a validar la expresión del niño sin corregirla ni sustituirla.',
-        pista: 'Comprobar que se indique el respeto a la autenticidad de la respuesta del niño.',
+        enunciado: 'La planificación permite que el niño sea escuchado sin cambiar su idea original.',
+        pista: '¿De qué manera describe el docente en el documento el momento de socialización donde cada niño comparte con sus compañeros lo que descubrió que puede hacer solo o acompañado?',
       },
     ],
     version: 'V6.6.22',
@@ -89,28 +88,28 @@ const DIMENSIONES = [
     reactivos: [
       {
         reactivo_codigo: '3.1',
-        enunciado: 'La planificación posiciona al docente como mediador del pensamiento y no como única fuente de decisión y conocimiento.',
-        pista: 'Observar si el rol del docente se describe desde la mediación en lugar de la imposición.',
+        enunciado: 'La planificación permite que el maestro acompañe al niño.',
+        pista: '¿De qué manera evidencia el docente en los pasos de la actividad la formulación de preguntas mediadoras para hacer pensar a los niños (por ejemplo, en los rompecabezas o secuencias) en lugar de simplemente darles la respuesta hecha?',
       },
       {
         reactivo_codigo: '3.2',
-        enunciado: 'Las decisiones sobre la actividad se comparten con el niño y no las define exclusivamente el adulto.',
-        pista: 'Verificar si el niño opina sobre qué se hace, cómo y con qué se realiza la actividad.',
+        enunciado: 'La planificación permite que el niño tome desiciones.',
+        pista: '¿De qué manera evidencia el docente en el diseño de la actividad que se permite a los niños tomar decisiones autónomas, por ejemplo, al elegir por qué pieza empezar a armar su rompecabezas o cómo organizar su serie temporal?',
       },
       {
         reactivo_codigo: '3.3',
-        enunciado: 'La voz del niño tiene influencia real: lo que expresa nutre o modifica el desarrollo de la actividad o la construcción colectiva.',
-        pista: 'Buscar si las aportaciones del niño se materializan en algo concreto, por ejemplo, en la creación del mural.',
+        enunciado: 'La planificación considera las ideas de los niños para enriquecer o modificar el desarrollo de las actividades.',
+        pista: '¿De qué manera evidencia el docente en el plan que, al construir la "¿Conclusión Colectiva” del grupo, se abre la posibilidad de anotar ideas nuevas surgidas del diálogo con los niños que no estaban inicialmente en los pictogramas?',
       },
       {
         reactivo_codigo: '3.4',
-        enunciado: 'El lenguaje y las consignas reconocen al niño como sujeto capaz y competente, no como receptor pasivo.',
-        pista: 'Analizar la redacción de las consignas para asegurar que se dirigen a un participante activo.',
+        enunciado: 'La planificación reconoce al niño como un sujeto con autonomía niño.',
+        pista: '¿De qué manera evidencia el docente en la redacción del documento técnico que se concibe al niño como un sujeto activo que construye y descubre (utilizando términos como "clasificar", "seriar" o "caracterizar") en lugar de un agente pasivo que solo memoriza?',
       },
       {
         reactivo_codigo: '3.5',
-        enunciado: 'La planificación reconoce y respeta la autonomía progresiva del niño, distinguiendo lo que puede hacer por sí mismo y aquello en lo que requiere acompañamiento.',
-        pista: 'Identificar si se diferencia claramente el trabajo independiente del niño del apoyo que le brinda el adulto.',
+        enunciado: 'La planificación respeta la autonomía progresiva del niño.',
+        pista: '¿De qué manera asegura el docente que el eje central de la actividad (identidad y autonomía) guíe al niño a reconocer y verbalizar sus propios límites frente a situaciones de riesgo?',
       },
     ],
     version: 'V6.6.22',
@@ -119,11 +118,7 @@ const DIMENSIONES = [
 
 function generarEvaluaciones() {
   const evaluaciones = [];
-  const docentes = [
-    { cedula: '1098765432', nombre: 'María López' },
-    { cedula: '1087654321', nombre: 'Carlos Ramírez' },
-    { cedula: '1076543210', nombre: 'Ana García' },
-  ];
+  const cedula_docente = ['1098765432', '1087654321', '1076543210'];
 
   const perfiles = [
     [4, 3, 4, 4, 3, 3, 4, 3, 4, 3, 2, 3, 2, 3, 2],
@@ -137,11 +132,16 @@ function generarEvaluaciones() {
     '3.1', '3.2', '3.3', '3.4', '3.5',
   ];
 
-  for (let i = 0; i < docentes.length; i++) {
+  for (let i = 0; i < cedula_docente.length; i++) {
     const respuestas = codigosReactivos.map((reactivo_codigo, idx) => ({
       reactivo_codigo: reactivo_codigo,
       valor: perfiles[i][idx],
     }));
+
+    const comentarios = {
+      compromiso_personal: `Compromiso del docente ${cedula_docente[i]}`,
+      opiniones_programa: `Opiniones del docente ${cedula_docente[i]}`,
+    };
 
     const subtotalD1 = perfiles[i].slice(0, 5).reduce((a, b) => a + b, 0);
     const subtotalD2 = perfiles[i].slice(5, 10).reduce((a, b) => a + b, 0);
@@ -160,15 +160,16 @@ function generarEvaluaciones() {
       .replace('ID', 'D');
 
     evaluaciones.push({
-      datos_docente: docentes[i],
+      cedula_docente: cedula_docente[i],
       respuestas,
+      comentarios,
       resultados: {
         subtotales: { D1: subtotalD1, D2: subtotalD2, D3: subtotalD3 },
         indices_dimensionales: indices,
         IGPP: igpp,
         dimension_prioritaria: dimensionPrioritaria,
       },
-      version: 'V6.6.22',
+      version: 'V6.6.30',
     });
   }
 

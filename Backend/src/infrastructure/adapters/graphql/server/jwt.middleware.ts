@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'utn_fecyt_secret';
 export interface ContextoGraphQL {
   administrador?: {
     id: string;
-    email: string;
+    cedula: string;
   };
 }
 
@@ -18,7 +18,7 @@ export const extraerToken = (req: IncomingMessage): ContextoGraphQL => {
 
   const token = authHeader.split(' ')[1];
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
+    const payload = jwt.verify(token, JWT_SECRET) as { id: string; cedula: string };
     return { administrador: payload };
   } catch (error) {
     return {};

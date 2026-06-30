@@ -27,7 +27,7 @@ export class DimensionRepository implements IDimensionRepository {
   }
 
   async actualizar(id: string, datos: ActualizarDimensionDTO): Promise<Dimension | null> {
-    const doc = await DimensionModel.findByIdAndUpdate(id, datos, { new: true });
+    const doc = await DimensionModel.findByIdAndUpdate(id, datos, { returnDocument: 'after' });
     return this.mapearADominio(doc);
   }
 

@@ -1,14 +1,15 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IEvaluacionDocument extends Document {
-  datos_docente: {
-    cedula: string;
-    nombre: string;
-  };
+  cedula_docente: string;
   respuestas: {
     reactivo_codigo: string;
     valor: number;
   }[];
+  comentarios: {
+    compromiso_personal: string | null;
+    opiniones_programa: string | null;
+  } | null;
   resultados: {
     subtotales: {
       D1: number;
@@ -26,14 +27,14 @@ export interface IEvaluacionDocument extends Document {
   version: string;
 }
 
-const DatosDocenteSchema = new Schema({
-  cedula: { type: String, required: true },
-  nombre: { type: String, required: true }
-}, { _id: false });
-
 const RespuestaSchema = new Schema({
   reactivo_codigo: { type: String, required: true },
   valor: { type: Number, required: true, min: 0, max: 4 }
+}, { _id: false });
+
+const ComentariosSchema = new Schema({
+  compromiso_personal: { type: String, default: null },
+  opiniones_programa: { type: String, default: null }
 }, { _id: false });
 
 const SubtotalesSchema = new Schema({
@@ -56,10 +57,11 @@ const ResultadosSchema = new Schema({
 }, { _id: false });
 
 const EvaluacionSchema = new Schema<IEvaluacionDocument>({
-  datos_docente: { type: DatosDocenteSchema, required: true },
+  cedula_docente: { type: String, required: true },
   respuestas: [RespuestaSchema],
+  comentarios: { type: ComentariosSchema, default: null },
   resultados: { type: ResultadosSchema, required: true },
-  version: { type: String, default: 'V6.6.22' }
+  version: { type: String, default: 'V6.6.30' }
 }, {
   timestamps: true,
   collection: 'evaluaciones'

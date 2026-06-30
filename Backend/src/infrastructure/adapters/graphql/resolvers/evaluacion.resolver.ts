@@ -1,10 +1,12 @@
 import { EvaluacionRepository } from '../../database/mongodb/repositories/evaluacion.repository';
-import { CrearEvaluacionDTO } from '../../../../domain/models/evaluacion.model';
+import { CrearEvaluacionDTO, ComentarEvaluacionDTO } from '../../../../domain/models/evaluacion.model';
 import { CalculosService } from '../../../../domain/services/calculos.service';
+import { CedulaEcuatorianaScalar } from '../scalars/cedulaEcuatoriana';
 
 const evaluacionRepo = new EvaluacionRepository();
 
 export const evaluacionResolvers = {
+  CedulaEcuatoriana: CedulaEcuatorianaScalar,
   Query: {
     obtenerEvaluaciones: async () => {
       return evaluacionRepo.obtenerTodas();
@@ -50,6 +52,35 @@ export const evaluacionResolvers = {
 
       const resultados = CalculosService.calcularResultados(input.respuestas);
       return evaluacionRepo.crear(input, resultados);
-    }
+    },
+
+    agregarComentarios: async (
+      _: any,
+      { evaluacionId, input }: { evaluacionId: string; input: ComentarEvaluacionDTO }
+    ) => {
+      const evaluacion = await evaluacionRepo.obtenerPorId(evaluacionId);
+      if (!evaluacion) {
+        throw new Error('Evaluación no encontrada');
+      }
+
+      const compromiso = input.compromiso_personal?.trim() || null;
+      const opiniones = input.opiniones_programa?.trim() || null;
+
+      if (compromiso && compromiso.length > 500) {
+        throw new Error('El campo compromiso_personal no puede exceder 500 caracteres');
+      }
+      if (opiniones && opiniones.length > 500) {
+        throw new Error('El campo opiniones_programa no puede exceder 500 caracteres');
+      }
+
+      const comentarios = {
+        compromiso_personal: compromiso,
+        opiniones_programa: opiniones,
+      };
+
+      const resultado = await evaluacionRepo.agregarComentarios(evaluacionId, comentarios);
+      if (!resultado) throw new Error('Error al guardar comentarios');
+      return resultado;
+    },
   }
 };

@@ -126,8 +126,7 @@ export class CalculosService {
 
     return {
       evaluacion_id: evaluacion.id,
-      docente_cedula: evaluacion.datos_docente.cedula,
-      docente_nombre: evaluacion.datos_docente.nombre,
+      docente_cedula: evaluacion.cedula_docente,
       dimensiones,
       puntaje_total: puntajeTotal,
       maximo_total: this.MAXIMO_TOTAL,

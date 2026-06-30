@@ -3,20 +3,8 @@ import { Administrador, ActualizarAdministradorDTO } from '../../../../../domain
 import { AdministradorModel, IAdministradorDocument } from '../models/administrador.schema';
 
 export class AdministradorRepository implements IAdministradorRepository {
-  async buscarPorEmail(email: string): Promise<Administrador | null> {
-    const doc = await AdministradorModel.findOne({
-      email,
-      $or: [{ rol: 'admin' }, { rol: { $exists: false } }]
-    });
-    return this.mapearADominio(doc);
-  }
-
   async buscarPorCedula(cedula: string): Promise<Administrador | null> {
-    // Solo devuelve si tiene rol 'admin' activo o es legacy (sin rol definido)
-    const doc = await AdministradorModel.findOne({
-      cedula,
-      $or: [{ rol: 'admin' }, { rol: { $exists: false } }]
-    });
+    const doc = await AdministradorModel.findOne({ cedula });
     return this.mapearADominio(doc);
   }
 
@@ -40,16 +28,7 @@ export class AdministradorRepository implements IAdministradorRepository {
     const doc = await AdministradorModel.findByIdAndUpdate(
       id,
       { $set: datos },
-      { new: true }
-    );
-    return this.mapearADominio(doc);
-  }
-
-  async cambiarRol(id: string, nuevoRol: string): Promise<Administrador | null> {
-    const doc = await AdministradorModel.findByIdAndUpdate(
-      id,
-      { $set: { rol: nuevoRol } },
-      { new: true }
+      { returnDocument: 'after' }
     );
     return this.mapearADominio(doc);
   }
@@ -60,9 +39,7 @@ export class AdministradorRepository implements IAdministradorRepository {
       id: doc._id.toString(),
       cedula: doc.cedula,
       nombre: doc.nombre,
-      email: doc.email,
       password: doc.password,
-      rol: doc.rol || 'admin',
       version: doc.version
     };
   }

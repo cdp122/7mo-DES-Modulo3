@@ -1,11 +1,11 @@
 import { IEvaluacionRepository } from '../../../../../domain/repositories/evaluacion.repository.port';
-import { Evaluacion, CrearEvaluacionDTO, ResultadosEvaluacion } from '../../../../../domain/models/evaluacion.model';
+import { Evaluacion, CrearEvaluacionDTO, Comentarios, ResultadosEvaluacion } from '../../../../../domain/models/evaluacion.model';
 import { EvaluacionModel, IEvaluacionDocument } from '../models/evaluacion.schema';
 
 export class EvaluacionRepository implements IEvaluacionRepository {
   async crear(evaluacion: CrearEvaluacionDTO, resultados: ResultadosEvaluacion): Promise<Evaluacion> {
     const doc = new EvaluacionModel({
-      datos_docente: evaluacion.datos_docente,
+      cedula_docente: evaluacion.cedula_docente,
       respuestas: evaluacion.respuestas,
       resultados
     });
@@ -15,13 +15,22 @@ export class EvaluacionRepository implements IEvaluacionRepository {
     return resultado;
   }
 
+  async agregarComentarios(id: string, comentarios: Comentarios): Promise<Evaluacion | null> {
+    const doc = await EvaluacionModel.findByIdAndUpdate(
+      id,
+      { $set: { comentarios } },
+      { returnDocument: 'after' }
+    );
+    return this.mapearADominio(doc);
+  }
+
   async obtenerPorId(id: string): Promise<Evaluacion | null> {
     const doc = await EvaluacionModel.findById(id);
     return this.mapearADominio(doc);
   }
 
   async obtenerPorDocenteCedula(cedula: string): Promise<Evaluacion[]> {
-    const docs = await EvaluacionModel.find({ 'datos_docente.cedula': cedula });
+    const docs = await EvaluacionModel.find({ cedula_docente: cedula });
     return docs.map(doc => this.mapearADominio(doc)).filter((e): e is Evaluacion => e !== null);
   }
 
@@ -64,14 +73,12 @@ export class EvaluacionRepository implements IEvaluacionRepository {
     if (!doc) return null;
     return {
       id: doc._id.toString(),
-      datos_docente: {
-        cedula: doc.datos_docente.cedula,
-        nombre: doc.datos_docente.nombre
-      },
+      cedula_docente: doc.cedula_docente,
       respuestas: doc.respuestas.map(r => ({
         reactivo_codigo: r.reactivo_codigo,
         valor: r.valor
       })),
+      comentarios: doc.comentarios ?? { compromiso_personal: null, opiniones_programa: null },
       resultados: {
         subtotales: {
           D1: doc.resultados.subtotales.D1,

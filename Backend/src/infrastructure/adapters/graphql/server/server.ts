@@ -33,6 +33,7 @@ const crearSchema = () => {
   return makeExecutableSchema({
     typeDefs,
     resolvers: {
+      CedulaEcuatoriana: evaluacionResolvers.CedulaEcuatoriana,
       Query: {
         ...administradorResolvers.Query,
         ...dimensionResolvers.Query,
