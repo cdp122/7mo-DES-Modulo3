@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider<AuthCubit>(
       create: (context) => sl<AuthCubit>(),
       child: MaterialApp.router(
-        title: 'Sistema de Encuestas',
+        title: 'Evaluación Instrumento',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.lightTheme,
