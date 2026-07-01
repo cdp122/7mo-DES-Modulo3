@@ -45,6 +45,10 @@ class ResultadosCubit extends Cubit<ResultadosState> {
     }
   }
 
+  Future<List<int>> exportarExcel({String? cedula}) {
+    return _repository.exportarEvaluacionesExcel(cedula: cedula);
+  }
+
   void limpiarBusqueda() {
     final currentState = state;
     if (currentState is ResultadosLoaded) {

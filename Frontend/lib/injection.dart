@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
+import 'core/network/api_client.dart';
 import 'core/network/graphql_service.dart';
 import 'features/auth/data/datasources/auth_remote_datasource.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
@@ -21,6 +22,8 @@ Future<void> init() async {
   // Core
   sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => GraphQLService(dio: sl()));
+  // Dio propio (no el compartido con GraphQLService) para no alterar sus timeouts/interceptores
+  sl.registerLazySingleton(() => ApiClient(Dio()));
 
   // Features - Auth
 
@@ -52,7 +55,7 @@ Future<void> init() async {
   sl.registerFactory(() => DimensionesCubit(sl()));
 
   // Features - Admin Panel (Resultados)
-  sl.registerLazySingleton(() => ResultadosRepository(sl()));
+  sl.registerLazySingleton(() => ResultadosRepository(sl(), sl()));
   sl.registerFactory(() => ResultadosCubit(sl()));
 
   // Features - Admin Panel (Administradores)

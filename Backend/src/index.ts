@@ -3,8 +3,9 @@ import cors from 'cors';
 dotenv.config();
 
 import express from 'express'; 
-import { connectDatabase } from './infrastructure/adapters/database/mongodb/connection'; 
-import { crearServidorGraphQL } from './infrastructure/adapters/graphql/server/server'; 
+import { connectDatabase } from './infrastructure/adapters/database/mongodb/connection';
+import { crearServidorGraphQL } from './infrastructure/adapters/graphql/server/server';
+import { crearRouterReportes } from './infrastructure/adapters/reportes/reportes.router';
 
 const PORT = process.env.PORT || 4000;
 
@@ -23,8 +24,10 @@ const iniciarServidor = async () => {
     }));
 
     app.get('/health', (_req, res) => {
-      res.json({ status: 'OK', timestamp: new Date().toISOString() }); 
+      res.json({ status: 'OK', timestamp: new Date().toISOString() });
     });
+
+    app.use('/api/reportes', crearRouterReportes());
 
     app.listen(PORT, () => {
       console.log(`Servidor ejecutándose en http://localhost:${PORT}`); 

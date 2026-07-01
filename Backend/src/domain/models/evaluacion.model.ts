@@ -30,6 +30,7 @@ export interface Evaluacion {
   comentarios: Comentarios;
   resultados: ResultadosEvaluacion;
   version: string;
+  fecha_registro: Date;
 }
 
 export interface CrearEvaluacionDTO {

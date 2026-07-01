@@ -25,6 +25,8 @@ export interface IEvaluacionDocument extends Document {
     dimension_prioritaria: string;
   };
   version: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const RespuestaSchema = new Schema({

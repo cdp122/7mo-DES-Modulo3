@@ -1,10 +1,13 @@
+import 'package:dio/dio.dart';
+import '../../../../core/network/api_client.dart';
 import '../../../../core/network/graphql_service.dart';
 import '../../domain/entities/resultados_evaluacion.dart';
 
 class ResultadosRepository {
   final GraphQLService _graphQLService;
+  final ApiClient _apiClient;
 
-  ResultadosRepository(this._graphQLService);
+  ResultadosRepository(this._graphQLService, this._apiClient);
 
   Future<ResumenGeneralEntity> obtenerResumenGeneral() async {
     const query = r'''
@@ -115,5 +118,31 @@ class ResultadosRepository {
       );
     }
     return null;
+  }
+
+  /// Descarga el reporte Excel de evaluaciones desde el backend.
+  /// Si [cedula] se provee, filtra solo las evaluaciones de ese docente.
+  Future<List<int>> exportarEvaluacionesExcel({String? cedula}) async {
+    try {
+      final response = await _apiClient.dio.get<List<int>>(
+        '/reportes/evaluaciones/excel',
+        queryParameters: cedula != null ? {'cedula': cedula} : null,
+        options: Options(
+          responseType: ResponseType.bytes,
+          headers: {
+            if (_graphQLService.token != null)
+              'Authorization': 'Bearer ${_graphQLService.token}',
+          },
+        ),
+      );
+      return response.data ?? [];
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw Exception(
+          'No autenticado. Vuelve a iniciar sesión como administrador.',
+        );
+      }
+      throw Exception('No se pudo generar el archivo Excel: ${e.message}');
+    }
   }
 }

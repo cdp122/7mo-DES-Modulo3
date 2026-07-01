@@ -93,7 +93,8 @@ export class EvaluacionRepository implements IEvaluacionRepository {
         IGPP: doc.resultados.IGPP,
         dimension_prioritaria: doc.resultados.dimension_prioritaria
       },
-      version: doc.version
+      version: doc.version,
+      fecha_registro: doc.createdAt
     };
   }
 }

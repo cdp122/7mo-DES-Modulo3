@@ -9,6 +9,8 @@ class GraphQLService {
     _token = token;
   }
 
+  String? get token => _token;
+
   GraphQLService({
     required Dio dio,
     String endpoint = const String.fromEnvironment('API_URL', defaultValue: 'http://localhost:4000') + '/graphql',

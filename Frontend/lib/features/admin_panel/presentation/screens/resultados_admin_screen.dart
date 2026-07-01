@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -86,6 +88,7 @@ class ResultadosAdminScreen extends StatefulWidget {
 class _ResultadosAdminScreenState extends State<ResultadosAdminScreen> {
   final _cedulaController = TextEditingController();
   bool _buscando = false;
+  bool _exportando = false;
 
   @override
   void initState() {
@@ -110,6 +113,39 @@ class _ResultadosAdminScreenState extends State<ResultadosAdminScreen> {
     _cedulaController.clear();
     setState(() => _buscando = false);
     context.read<ResultadosCubit>().limpiarBusqueda();
+  }
+
+  Future<void> _exportarExcel() async {
+    if (_exportando) return;
+    setState(() => _exportando = true);
+    try {
+      final cedula = _buscando ? _cedulaController.text.trim() : null;
+      final bytes = await context
+          .read<ResultadosCubit>()
+          .exportarExcel(cedula: cedula?.isNotEmpty == true ? cedula : null);
+
+      await FileSaver.instance.saveFile(
+        name: 'evaluaciones_${DateTime.now().millisecondsSinceEpoch}',
+        bytes: Uint8List.fromList(bytes),
+        fileExtension: 'xlsx',
+        mimeType: MimeType.microsoftExcel,
+      );
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Excel descargado correctamente.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al exportar: ${e.toString().replaceAll('Exception: ', '')}'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _exportando = false);
+    }
   }
 
   @override
@@ -140,6 +176,24 @@ class _ResultadosAdminScreenState extends State<ResultadosAdminScreen> {
                   color: Colors.white,
                   letterSpacing: -0.3),
             ),
+            actions: [
+              IconButton(
+                tooltip: 'Exportar a Excel',
+                icon: _exportando
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.file_download_outlined,
+                        color: Colors.white),
+                onPressed: _exportando ? null : _exportarExcel,
+              ),
+              const SizedBox(width: 8),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.parallax,
               background: Container(
