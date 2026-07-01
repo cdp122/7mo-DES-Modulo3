@@ -10,7 +10,6 @@ import '../widgets/likert_button_widget.dart';
 
 class Dimension1Screen extends StatefulWidget {
   final String cedulaDocente;
-  // NUEVO: Agregamos el mapa de respuestas para cuando regresemos de la D2
   final Map<String, int>? respuestasAcumuladas;
 
   const Dimension1Screen({
@@ -39,10 +38,8 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
     super.initState();
     _respuestas = Map<String, int>.from(widget.respuestasAcumuladas ?? {});
 
-    // Si volvemos de la dimensión 2 y ya existe la respuesta del reactivo final '1.5'
     if (_respuestas.containsKey('1.5')) {
-      _preguntaActualIndex =
-          4; // Posición automática en la pregunta 5 (índice 4)
+      _preguntaActualIndex = 4; 
     }
 
     _animationController = AnimationController(
@@ -61,15 +58,12 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
   }
 
   void _continuar(DimensionEntity dimensionActual) {
-    final String codigoReal =
-        dimensionActual.reactivos[_preguntaActualIndex].codigo;
+    final String codigoReal = dimensionActual.reactivos[_preguntaActualIndex].codigo;
 
     if (!_respuestas.containsKey(codigoReal)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-            'Por favor, selecciona una respuesta antes de continuar',
-          ),
+          content: const Text('Por favor, selecciona una respuesta antes de continuar'),
           backgroundColor: colorTema,
         ),
       );
@@ -105,7 +99,9 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
 
   @override
   Widget build(BuildContext context) {
-    final bool esPantallaAncha = MediaQuery.of(context).size.width > 900;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool esPantallaAncha = screenWidth > 900;
+    final bool esMovil = screenWidth < 600;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
@@ -118,9 +114,7 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
             padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
               icon: Icon(
-                AudioService().isMuted
-                    ? Icons.volume_off_rounded
-                    : Icons.volume_up_rounded,
+                AudioService().isMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
                 color: colorTema,
                 size: 32,
               ),
@@ -131,22 +125,21 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
       ),
       body: BlocBuilder<PreguntasCubit, PreguntasState>(
         builder: (context, state) {
-          if (state is PreguntasLoading || state is PreguntasInitial)
+          if (state is PreguntasLoading || state is PreguntasInitial) {
             return Center(child: CircularProgressIndicator(color: colorTema));
+          }
 
           if (state is PreguntasLoaded) {
             final dimensionBD = state.dimensiones.firstWhere(
               (d) => d.orden == 1,
               orElse: () => state.dimensiones.first,
             );
-            if (dimensionBD.reactivos.isEmpty)
-              return const Center(
-                child: Text('No hay preguntas en la base de datos.'),
-              );
+            if (dimensionBD.reactivos.isEmpty) {
+              return const Center(child: Text('No hay preguntas en la base de datos.'));
+            }
 
             final reactivoActual = dimensionBD.reactivos[_preguntaActualIndex];
-            final progresoGlobal =
-                (_preguntaActualIndex + 1) / dimensionBD.reactivos.length;
+            final progresoGlobal = (_preguntaActualIndex + 1) / dimensionBD.reactivos.length;
             final imagenActual = _mostrarPista
                 ? 'assets/images/Oso3.png'
                 : _obtenerImagenOsoPregunta(_preguntaActualIndex);
@@ -162,14 +155,11 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: EdgeInsets.all(esMovil ? 12.0 : 24.0),
                       child: Container(
                         width: double.infinity,
                         constraints: const BoxConstraints(maxWidth: 1100),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 24,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: esMovil ? 20 : 40, vertical: esMovil ? 16 : 24),
                         decoration: BoxDecoration(
                           color: AppColors.surfaceLight,
                           borderRadius: BorderRadius.circular(24),
@@ -187,10 +177,7 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
                             Column(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   decoration: BoxDecoration(
                                     color: colorTema.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(12),
@@ -200,9 +187,10 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
                                     style: TextStyle(
                                       color: colorTema,
                                       fontWeight: FontWeight.w900,
-                                      fontSize: 16,
+                                      fontSize: esMovil ? 14 : 16,
                                       letterSpacing: 1,
                                     ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -217,116 +205,86 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
                               ],
                             ),
 
+                            // 2. SECCIÓN CENTRAL AUTOAJUSTABLE
                             Expanded(
                               flex: 5,
                               child: Flex(
-                                direction: esPantallaAncha
-                                    ? Axis.horizontal
-                                    : Axis.vertical,
+                                direction: esPantallaAncha ? Axis.horizontal : Axis.vertical,
+                                // Volvemos al centro. Los Flexible harán que se reparta bien el espacio
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Flexible(
-                                    flex: 2,
+                                    flex: 2, // Toma el 40% del espacio central dinámicamente
                                     child: AnimatedBuilder(
                                       animation: _floatingAnimation,
-                                      builder: (context, child) =>
-                                          Transform.translate(
-                                            offset: Offset(
-                                              0,
-                                              _floatingAnimation.value,
-                                            ),
-                                            child: child,
-                                          ),
+                                      builder: (context, child) => Transform.translate(
+                                        offset: Offset(0, _floatingAnimation.value),
+                                        child: child,
+                                      ),
                                       child: Image.asset(
                                         imagenActual,
-                                        fit: BoxFit.contain,
+                                        fit: BoxFit.contain, // Crecerá todo lo que le permita el Flexible sin deformarse
                                       ),
                                     ),
                                   ),
-                                  if (esPantallaAncha)
-                                    const SizedBox(width: 48)
-                                  else
-                                    const SizedBox(height: 16),
+                                  
+                                  if (esPantallaAncha) const SizedBox(width: 48) else SizedBox(height: esMovil ? 16 : 12),
 
-                                  Expanded(
-                                    flex: 3,
+                                  Flexible(
+                                    flex: 3, // El texto toma el 60% restante
+                                    fit: FlexFit.loose, // Si el texto es corto, no obliga a empujar las cosas, se centra
                                     child: SingleChildScrollView(
+                                      physics: const BouncingScrollPhysics(),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        crossAxisAlignment: esMovil ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           RichText(
-                                            textAlign: TextAlign.left,
+                                            textAlign: esMovil ? TextAlign.center : TextAlign.left,
                                             text: TextSpan(
-                                              style: const TextStyle(
-                                                fontSize: 22,
+                                              style: TextStyle(
+                                                fontSize: esMovil ? 18 : 22,
                                                 fontWeight: FontWeight.w800,
-                                                color:
-                                                    AppColors.textPrimaryLight,
-                                                height: 1.4,
+                                                color: AppColors.textPrimaryLight,
+                                                height: 1.3,
                                               ),
                                               children: [
-                                                TextSpan(
-                                                  text:
-                                                      reactivoActual.enunciado +
-                                                      ' ',
-                                                ),
-                                                if (reactivoActual.pista !=
-                                                        null &&
-                                                    reactivoActual
-                                                        .pista!
-                                                        .isNotEmpty)
+                                                TextSpan(text: reactivoActual.enunciado + ' '),
+                                                if (reactivoActual.pista != null && reactivoActual.pista!.isNotEmpty)
                                                   WidgetSpan(
-                                                    alignment:
-                                                        PlaceholderAlignment
-                                                            .middle,
+                                                    alignment: PlaceholderAlignment.middle,
                                                     child: IconButton(
                                                       padding: EdgeInsets.zero,
-                                                      constraints:
-                                                          const BoxConstraints(),
+                                                      constraints: const BoxConstraints(),
                                                       icon: Icon(
-                                                        _mostrarPista
-                                                            ? Icons.lightbulb
-                                                            : Icons
-                                                                  .lightbulb_outline,
+                                                        _mostrarPista ? Icons.lightbulb : Icons.lightbulb_outline,
                                                         color: Colors.amber,
-                                                        size: 34,
+                                                        size: esMovil ? 28 : 34,
                                                       ),
-                                                      onPressed: () => setState(
-                                                        () => _mostrarPista =
-                                                            !_mostrarPista,
-                                                      ),
+                                                      onPressed: () => setState(() => _mostrarPista = !_mostrarPista),
                                                     ),
                                                   ),
                                               ],
                                             ),
                                           ),
-                                          if (_mostrarPista &&
-                                              reactivoActual.pista != null) ...[
-                                            const SizedBox(height: 16),
+                                          if (_mostrarPista && reactivoActual.pista != null) ...[
+                                            const SizedBox(height: 12),
                                             Container(
                                               width: double.infinity,
-                                              padding: const EdgeInsets.all(16),
+                                              padding: const EdgeInsets.all(12),
                                               decoration: BoxDecoration(
-                                                color: Colors.amber.withOpacity(
-                                                  0.08,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                border: Border.all(
-                                                  color: Colors.amber
-                                                      .withOpacity(0.3),
-                                                ),
+                                                color: Colors.amber.withOpacity(0.08),
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(color: Colors.amber.withOpacity(0.3)),
                                               ),
                                               child: Text(
                                                 reactivoActual.pista!,
                                                 style: const TextStyle(
-                                                  color: AppColors
-                                                      .textPrimaryLight,
-                                                  fontSize: 15,
-                                                  height: 1.4,
+                                                  color: AppColors.textPrimaryLight,
+                                                  fontSize: 14,
+                                                  height: 1.3,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                               ),
@@ -342,38 +300,26 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
 
                             Column(
                               children: [
-                                const SizedBox(height: 16),
+                                SizedBox(height: esMovil ? 12 : 16),
                                 LikertOptionsGroup(
-                                  valorSeleccionado:
-                                      _respuestas[reactivoActual.codigo],
+                                  valorSeleccionado: _respuestas[reactivoActual.codigo],
                                   onSelected: (valor) {
-                                    setState(
-                                      () => _respuestas[reactivoActual.codigo] =
-                                          valor,
-                                    );
+                                    setState(() => _respuestas[reactivoActual.codigo] = valor);
                                   },
                                 ),
-                                const SizedBox(height: 24),
+                                SizedBox(height: esMovil ? 16 : 24),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     TextButton.icon(
                                       onPressed: _regresar,
-                                      icon: const Icon(
-                                        Icons.arrow_back_rounded,
-                                        size: 22,
-                                      ),
+                                      icon: const Icon(Icons.arrow_back_rounded, size: 22),
                                       label: const Text(
                                         'Regresar',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                       ),
                                       style: TextButton.styleFrom(
-                                        foregroundColor:
-                                            AppColors.textSecondaryLight,
+                                        foregroundColor: AppColors.textSecondaryLight,
                                       ),
                                     ),
                                     ElevatedButton(
@@ -381,22 +327,14 @@ class _Dimension1ScreenState extends State<Dimension1Screen>
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: colorTema,
                                         foregroundColor: AppColors.surfaceLight,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 36,
-                                          vertical: 18,
-                                        ),
+                                        padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 18),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            14,
-                                          ),
+                                          borderRadius: BorderRadius.circular(14),
                                         ),
                                       ),
                                       child: const Text(
                                         'Siguiente',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ],

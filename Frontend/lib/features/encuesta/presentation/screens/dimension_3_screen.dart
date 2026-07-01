@@ -72,7 +72,6 @@ class _Dimension3ScreenState extends State<Dimension3Screen> with SingleTickerPr
         _preguntaActualIndex--;
         _mostrarPista = false;
       } else {
-        // ACTUALIZADO: Regresamos enviando toda la memoria para que D2 tenga nuestras respuestas de D3.
         context.go('/encuesta/d2', extra: {
           'cedula': widget.cedulaDocente,
           'respuestas': _respuestas 
@@ -85,7 +84,9 @@ class _Dimension3ScreenState extends State<Dimension3Screen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    final bool esPantallaAncha = MediaQuery.of(context).size.width > 900;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool esPantallaAncha = screenWidth > 900;
+    final bool esMovil = screenWidth < 600;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
@@ -122,11 +123,11 @@ class _Dimension3ScreenState extends State<Dimension3Screen> with SingleTickerPr
                   LinearProgressIndicator(value: progresoGlobal, backgroundColor: AppColors.borderLight, color: colorTema, minHeight: 8),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: EdgeInsets.all(esMovil ? 12.0 : 24.0),
                       child: Container(
                         width: double.infinity,
                         constraints: const BoxConstraints(maxWidth: 1100),
-                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+                        padding: EdgeInsets.symmetric(horizontal: esMovil ? 20 : 40, vertical: esMovil ? 16 : 24),
                         decoration: BoxDecoration(
                           color: AppColors.surfaceLight,
                           borderRadius: BorderRadius.circular(24),
@@ -140,40 +141,61 @@ class _Dimension3ScreenState extends State<Dimension3Screen> with SingleTickerPr
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   decoration: BoxDecoration(color: colorTema.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                                  child: Text(dimensionBD.nombre.toUpperCase(), style: TextStyle(color: colorTema, fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1)),
+                                  child: Text(
+                                    dimensionBD.nombre.toUpperCase(), 
+                                    style: TextStyle(color: colorTema, fontWeight: FontWeight.w900, fontSize: esMovil ? 14 : 16, letterSpacing: 1),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text('Pregunta ${_preguntaActualIndex + 1}/${dimensionBD.reactivos.length}', style: const TextStyle(color: AppColors.textSecondaryLight, fontWeight: FontWeight.bold, fontSize: 14)),
                               ],
                             ),
                             
+                            // SECCIÓN CENTRAL AUTOAJUSTABLE
                             Expanded(
                               flex: 5,
                               child: Flex(
                                 direction: esPantallaAncha ? Axis.horizontal : Axis.vertical,
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Flexible(
                                     flex: 2,
                                     child: AnimatedBuilder(
                                       animation: _floatingAnimation,
-                                      builder: (context, child) => Transform.translate(offset: Offset(0, _floatingAnimation.value), child: child),
-                                      child: Image.asset(imagenActual, fit: BoxFit.contain),
+                                      builder: (context, child) => Transform.translate(
+                                        offset: Offset(0, _floatingAnimation.value),
+                                        child: child,
+                                      ),
+                                      child: Image.asset(
+                                        imagenActual,
+                                        fit: BoxFit.contain,
+                                      ),
                                     ),
                                   ),
-                                  if (esPantallaAncha) const SizedBox(width: 48) else const SizedBox(height: 16),
                                   
-                                  Expanded(
+                                  if (esPantallaAncha) const SizedBox(width: 48) else SizedBox(height: esMovil ? 16 : 12),
+
+                                  Flexible(
                                     flex: 3,
+                                    fit: FlexFit.loose,
                                     child: SingleChildScrollView(
+                                      physics: const BouncingScrollPhysics(),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment: esMovil ? CrossAxisAlignment.center : CrossAxisAlignment.start,
                                         mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           RichText(
-                                            textAlign: TextAlign.left,
+                                            textAlign: esMovil ? TextAlign.center : TextAlign.left,
                                             text: TextSpan(
-                                              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimaryLight, height: 1.4),
+                                              style: TextStyle(
+                                                fontSize: esMovil ? 18 : 22,
+                                                fontWeight: FontWeight.w800,
+                                                color: AppColors.textPrimaryLight,
+                                                height: 1.3,
+                                              ),
                                               children: [
                                                 TextSpan(text: reactivoActual.enunciado + ' '),
                                                 if (reactivoActual.pista != null && reactivoActual.pista!.isNotEmpty)
@@ -182,7 +204,11 @@ class _Dimension3ScreenState extends State<Dimension3Screen> with SingleTickerPr
                                                     child: IconButton(
                                                       padding: EdgeInsets.zero,
                                                       constraints: const BoxConstraints(),
-                                                      icon: Icon(_mostrarPista ? Icons.lightbulb : Icons.lightbulb_outline, color: Colors.amber, size: 34),
+                                                      icon: Icon(
+                                                        _mostrarPista ? Icons.lightbulb : Icons.lightbulb_outline,
+                                                        color: Colors.amber,
+                                                        size: esMovil ? 28 : 34,
+                                                      ),
                                                       onPressed: () => setState(() => _mostrarPista = !_mostrarPista),
                                                     ),
                                                   ),
@@ -190,12 +216,12 @@ class _Dimension3ScreenState extends State<Dimension3Screen> with SingleTickerPr
                                             ),
                                           ),
                                           if (_mostrarPista && reactivoActual.pista != null) ...[
-                                            const SizedBox(height: 16),
+                                            const SizedBox(height: 12),
                                             Container(
                                               width: double.infinity,
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: BoxDecoration(color: Colors.amber.withOpacity(0.08), borderRadius: BorderRadius.circular(16), border: Border.all(color: Colors.amber.withOpacity(0.3))),
-                                              child: Text(reactivoActual.pista!, style: const TextStyle(color: AppColors.textPrimaryLight, fontSize: 15, height: 1.4, fontWeight: FontWeight.w500)),
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(color: Colors.amber.withOpacity(0.08), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.amber.withOpacity(0.3))),
+                                              child: Text(reactivoActual.pista!, style: const TextStyle(color: AppColors.textPrimaryLight, fontSize: 14, height: 1.3, fontWeight: FontWeight.w500)),
                                             ),
                                           ],
                                         ],
@@ -208,14 +234,14 @@ class _Dimension3ScreenState extends State<Dimension3Screen> with SingleTickerPr
                             
                             Column(
                               children: [
-                                const SizedBox(height: 16),
+                                SizedBox(height: esMovil ? 12 : 16),
                                 LikertOptionsGroup(
                                   valorSeleccionado: _respuestas[reactivoActual.codigo],
                                   onSelected: (valor) {
                                     setState(() => _respuestas[reactivoActual.codigo] = valor);
                                   }
                                 ),
-                                const SizedBox(height: 24),
+                                SizedBox(height: esMovil ? 16 : 24),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
