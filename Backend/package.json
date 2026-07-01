@@ -1,6 +1,6 @@
 {
   "name": "backend-modulo-3",
-  "version": "6.6.24b",
+  "version": "V6.7.01",
   "description": "Sistema Backend para el módulo 3 acerca de la evaluación del instrumento",
   "main": "dist/index.js",
   "scripts": {
