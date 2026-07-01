@@ -6,6 +6,7 @@ on:
       - master # O el nombre de tu rama principal (ej. master)
     paths:
       - 'Backend/**' # Solo se ejecuta si cambian archivos del backend
+  workflow_dispatch: # Permite ejecutar el workflow manualmente desde la pestaña Actions de GitHub
 
 jobs:
   build-and-deploy:

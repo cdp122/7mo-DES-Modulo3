@@ -14,7 +14,7 @@ export interface CrearAdministradorDTO {
 
 export interface ActualizarAdministradorDTO {
   nombre?: string;
-  password?: string; // pre-hashed by the resolver if provided --
+  password?: string; // pre-hashed by the resolver if provided
 }
 
 export interface LoginDTO {
