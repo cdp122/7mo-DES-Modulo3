@@ -11,7 +11,7 @@ class GraphQLService {
 
   GraphQLService({
     required Dio dio,
-    String endpoint = 'http://localhost:4000/graphql',
+    String endpoint = const String.fromEnvironment('API_URL', defaultValue: 'http://localhost:4000') + '/graphql',
   })  : _dio = dio,
         _endpoint = endpoint {
     _dio.options.connectTimeout = const Duration(seconds: 50);

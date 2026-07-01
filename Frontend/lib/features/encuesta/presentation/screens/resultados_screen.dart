@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:confetti/confetti.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/network/audio_service.dart';
+import '../../../../core/network/graphql_service.dart';
+import '../../../../injection.dart';
 
 class ResultadosScreen extends StatefulWidget {
   final Map<String, dynamic> resultadoscompletos;
@@ -99,23 +101,14 @@ class _ResultadosScreenState extends State<ResultadosScreen> {
         }
       };
 
-      // 4. Enviamos al servidor Backend
-      final dio = Dio();
-      final response = await dio.post(
-        'http://localhost:4000/graphql',
-        data: {
-          'query': mutation,
-          'variables': variables,
-        },
-        options: Options(headers: {'Content-Type': 'application/json'}),
+      // 4. Enviamos al servidor Backend usando el servicio global
+      final graphqlService = sl<GraphQLService>();
+      final data = await graphqlService.execute(
+        mutation,
+        variables: variables,
       );
 
-      if (response.data != null && response.data['errors'] != null) {
-        throw Exception(response.data['errors'][0]['message']);
-      }
-
-      final data = response.data['data'];
-      if (data != null && data['crearEvaluacion'] != null) {
+      if (data['crearEvaluacion'] != null) {
         _evaluacionId = data['crearEvaluacion']['id'] as String?;
       }
 
@@ -160,19 +153,11 @@ class _ResultadosScreenState extends State<ResultadosScreen> {
     };
 
     try {
-      final dio = Dio();
-      final response = await dio.post(
-        'http://localhost:4000/graphql',
-        data: {
-          'query': mutation,
-          'variables': variables,
-        },
-        options: Options(headers: {'Content-Type': 'application/json'}),
+      final graphqlService = sl<GraphQLService>();
+      await graphqlService.execute(
+        mutation,
+        variables: variables,
       );
-
-      if (response.data != null && response.data['errors'] != null) {
-        throw Exception(response.data['errors'][0]['message']);
-      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

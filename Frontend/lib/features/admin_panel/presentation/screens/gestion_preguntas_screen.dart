@@ -90,7 +90,7 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
             ],
           ),
           content: const Text(
-            'Conexión activa con el Backend (puerto 4000). Todos los cambios realizados se guardan en tiempo real en la base de datos MongoDB.',
+            'Conexión activa con el servidor Backend. Todos los cambios realizados se guardan en tiempo real en la base de datos MongoDB.',
             style: TextStyle(fontSize: 14, height: 1.4),
           ),
           actions: [

@@ -4,8 +4,8 @@ class ApiClient {
   final Dio _dio;
 
   ApiClient(this._dio) {
-    // Configure base URL and timeouts
-    _dio.options.baseUrl = 'http://localhost:4000/api';
+    const String baseUrl = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:4000');
+    _dio.options.baseUrl = '$baseUrl/api';
     _dio.options.connectTimeout = const Duration(seconds: 15);
     _dio.options.receiveTimeout = const Duration(seconds: 15);
     
