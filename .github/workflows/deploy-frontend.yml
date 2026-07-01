@@ -38,4 +38,4 @@ jobs:
           action: 'upload'
           app_location: 'Frontend' # Carpeta raíz de la aplicación
           skip_app_build: true # Indica que ya compilamos el proyecto en el runner y evite que Oryx falle
-          output_location: 'Frontend/build/web' # Ubicación física de la compilación web
+          app_artifact_location: 'build/web' # Carpeta de la compilación web (relativo a app_location)
