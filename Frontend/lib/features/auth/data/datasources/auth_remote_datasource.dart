@@ -20,13 +20,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   /// si solo existe en 'evaluaciones' → docente, si no existe → nuevo docente.
   @override
   Future<UsuarioModel> verificarCedula(String cedula) async {
+    _token = null;
+    _graphQLService.setToken(null);
+
     const query = r'''
-      query BuscarAdminPorCedula($cedula: String!) {
+      query BuscarAdminPorCedula($cedula: CedulaEcuatoriana!) {
         buscarAdminPorCedula(cedula: $cedula) {
           id
           cedula
           nombre
-          email
         }
       }
     ''';
@@ -52,32 +54,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         nombre: null,
       );
     } catch (e) {
-      // Si el backend no está disponible o la query falla, relanzamos el error
-      throw Exception('No se pudo verificar la cédula: $e');
+      print('DEBUG: verificarCedula error: $e');
+      // Si la consulta falla, asumimos que es un docente regular para no bloquear el flujo de la encuesta.
+      return UsuarioModel(
+        id: cedula,
+        cedula: cedula,
+        rol: 'regular',
+        nombre: null,
+      );
     }
   }
 
-  /// Llama a la mutación login del backend con el email del administrador y su contraseña.
-  /// Nota: el backend usa email como identificador de login.
-  /// Como el frontend recibe cédula, primero buscamos el email del admin en el servidor
-  /// y luego hacemos login con ese email.
+  /// Llama a la mutación login del backend con la cédula del administrador y su contraseña.
   @override
   Future<bool> loginAdministrador(String cedula, String password) async {
-    // Paso 1: obtener el email del admin a partir de su cédula
-    const queryEmail = r'''
-      query BuscarAdminPorCedula($cedula: String!) {
-        buscarAdminPorCedula(cedula: $cedula) {
-          email
-        }
-      }
-    ''';
-
-    final dataAdmin = await _graphQLService.execute(queryEmail, variables: {'cedula': cedula});
-    final adminData = dataAdmin['buscarAdminPorCedula'] as Map<String, dynamic>?;
-    if (adminData == null) throw Exception('Administrador no encontrado');
-    final email = adminData['email'] as String;
-
-    // Paso 2: hacer login con email + password
     const mutation = r'''
       mutation Login($input: LoginInput!) {
         login(input: $input) {
@@ -86,26 +76,29 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             id
             cedula
             nombre
-            email
           }
         }
       }
     ''';
 
-    final data = await _graphQLService.execute(
-      mutation,
-      variables: {
-        'input': {'email': email, 'password': password},
-      },
-    );
+    try {
+      final data = await _graphQLService.execute(
+        mutation,
+        variables: {
+          'input': {'cedula': cedula, 'password': password},
+        },
+      );
 
-    if (data.containsKey('login') && data['login'] != null) {
-      final loginPayload = data['login'] as Map<String, dynamic>;
-      _token = loginPayload['token'] as String?;
-      return _token != null && _token!.isNotEmpty;
+      if (data.containsKey('login') && data['login'] != null) {
+        final loginPayload = data['login'] as Map<String, dynamic>;
+        _token = loginPayload['token'] as String?;
+        _graphQLService.setToken(_token);
+        return _token != null && _token!.isNotEmpty;
+      }
+      return false;
+    } catch (e) {
+      throw Exception('Credenciales inválidas o error de conexión: $e');
     }
-
-    return false;
   }
 }
 

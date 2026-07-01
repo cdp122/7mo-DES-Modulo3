@@ -1,9 +1,11 @@
 import { EvaluacionRepository } from '../../database/mongodb/repositories/evaluacion.repository';
+import { DimensionRepository } from '../../database/mongodb/repositories/dimension.repository';
 import { CrearEvaluacionDTO, ComentarEvaluacionDTO } from '../../../../domain/models/evaluacion.model';
 import { CalculosService } from '../../../../domain/services/calculos.service';
 import { CedulaEcuatorianaScalar } from '../scalars/cedulaEcuatoriana';
 
 const evaluacionRepo = new EvaluacionRepository();
+const dimensionRepo = new DimensionRepository();
 
 export const evaluacionResolvers = {
   CedulaEcuatoriana: CedulaEcuatorianaScalar,
@@ -26,23 +28,32 @@ export const evaluacionResolvers = {
     obtenerResultadosEvaluacion: async (_: any, { id }: { id: string }) => {
       const evaluacion = await evaluacionRepo.obtenerPorId(id);
       if (!evaluacion) return null;
-      return CalculosService.interpretarResultados(evaluacion);
+      const dimensiones = await dimensionRepo.obtenerTodas();
+      return CalculosService.interpretarResultados(evaluacion, dimensiones);
     },
 
     obtenerResultadosPorDocente: async (_: any, { cedula }: { cedula: string }) => {
       const evaluaciones = await evaluacionRepo.obtenerPorDocenteCedula(cedula);
-      return evaluaciones.map((ev) => CalculosService.interpretarResultados(ev));
+      const dimensiones = await dimensionRepo.obtenerTodas();
+      return evaluaciones.map((ev) => CalculosService.interpretarResultados(ev, dimensiones));
     },
 
     obtenerResumenGeneral: async () => {
       const evaluaciones = await evaluacionRepo.obtenerTodas();
-      return CalculosService.calcularResumenGeneral(evaluaciones);
+      const dimensiones = await dimensionRepo.obtenerTodas();
+      return CalculosService.calcularResumenGeneral(evaluaciones, dimensiones);
     },
   },
   Mutation: {
     crearEvaluacion: async (_: any, { input }: { input: CrearEvaluacionDTO }) => {
-      if (input.respuestas.length !== 15) {
-        throw new Error('Se deben responder exactamente 15 reactivos');
+      const dimensiones = await dimensionRepo.obtenerTodas();
+      let totalReactivos = dimensiones.reduce((acc, d) => acc + d.reactivos.length, 0);
+      if (totalReactivos === 0) {
+        totalReactivos = 15;
+      }
+
+      if (input.respuestas.length !== totalReactivos) {
+        throw new Error(`Se deben responder exactamente ${totalReactivos} reactivos`);
       }
 
       const valoresValidos = input.respuestas.every(r => r.valor >= 0 && r.valor <= 4);
@@ -50,7 +61,7 @@ export const evaluacionResolvers = {
         throw new Error('Los valores deben estar entre 0 y 4');
       }
 
-      const resultados = CalculosService.calcularResultados(input.respuestas);
+      const resultados = CalculosService.calcularResultados(input.respuestas, dimensiones);
       return evaluacionRepo.crear(input, resultados);
     },
 

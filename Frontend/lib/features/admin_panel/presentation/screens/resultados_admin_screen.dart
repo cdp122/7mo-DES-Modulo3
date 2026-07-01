@@ -10,9 +10,9 @@ import '../controller/resultados_state.dart';
 // ── Paleta local ────────────────────────────────────────────────
 class _P {
   static const navy = Color(0xFF16305B);
-  static const teal = Color(0xFF2C86A0);
-  static const sage = Color(0xFF4E9A6B);
-  static const amber = Color(0xFFDFA235);
+  static const teal = Color(0xFF009688); // Matching Survey D2 (Teal)
+  static const sage = Color(0xFF3F51B5); // Matching Survey D1 (Indigo)
+  static const amber = Color(0xFFFF9800); // Matching Survey D3 (Orange)
   static const terracotta = Color(0xFFD2693E);
 }
 

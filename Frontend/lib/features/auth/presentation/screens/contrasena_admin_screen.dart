@@ -19,19 +19,30 @@ class ContrasenaAdminScreen extends StatefulWidget {
 
 class _ContrasenaAdminScreenState extends State<ContrasenaAdminScreen> {
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _cedulaController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    _cedulaController.text = widget.usuario.cedula;
+  }
+
+  @override
   void dispose() {
     _passwordController.dispose();
+    _cedulaController.dispose();
     super.dispose();
   }
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      final cedula = widget.usuario.cedula.isNotEmpty
+          ? widget.usuario.cedula
+          : _cedulaController.text.trim();
       context.read<AuthCubit>().verificarContrasena(
-            widget.usuario.cedula,
+            cedula,
             _passwordController.text,
           );
     }
@@ -146,11 +157,30 @@ class _ContrasenaAdminScreenState extends State<ContrasenaAdminScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Hola, ${widget.usuario.nombre ?? 'Administrador'}. Ingrese su contraseña para acceder al Panel de Control.',
+                              widget.usuario.cedula.isNotEmpty
+                                  ? 'Hola, ${widget.usuario.nombre ?? 'Administrador'}. Ingrese su contraseña para acceder al Panel de Control.'
+                                  : 'Ingrese sus credenciales de administrador para acceder al Panel de Control.',
                               style: theme.textTheme.bodyMedium,
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 32),
+                            if (widget.usuario.cedula.isEmpty) ...[
+                              TextFormField(
+                                controller: _cedulaController,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration(
+                                  labelText: 'Cédula de Identidad',
+                                  prefixIcon: Icon(Icons.credit_card_rounded),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Por favor ingrese su cédula';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                            ],
                             TextFormField(
                               controller: _passwordController,
                               obscureText: _obscurePassword,

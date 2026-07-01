@@ -36,27 +36,30 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
   late TabController _tabController;
   Color _currentTabColor = const Color(0xFF4E9A6B); // Default: Sage Green for D1
 
+  int _tabCount = 3;
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    
-    // Animate color changes dynamically based on active tab
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging || _tabController.indexIsChanging) {
-        setState(() {
-          _currentTabColor = _getDimensionColor(_tabController.index + 1);
-        });
-      }
-    });
+    _tabController = TabController(length: _tabCount, vsync: this);
+    _tabController.addListener(_handleTabSelection);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PreguntasCubit>().cargarPreguntas();
     });
   }
 
+  void _handleTabSelection() {
+    if (!_tabController.indexIsChanging) {
+      setState(() {
+        _currentTabColor = _getDimensionColor(_tabController.index + 1);
+      });
+    }
+  }
+
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabSelection);
     _tabController.dispose();
     super.dispose();
   }
@@ -64,11 +67,11 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
   Color _getDimensionColor(int orden) {
     switch (orden) {
       case 1:
-        return const Color(0xFF4E9A6B); // Sage Green
+        return const Color(0xFF3F51B5); // Indigo
       case 2:
-        return const Color(0xFF2C86A0); // Teal Blue
+        return const Color(0xFF009688); // Teal
       case 3:
-        return const Color(0xFFD2693E); // Burnt Terracotta
+        return const Color(0xFFFF9800); // Orange
       default:
         return AppColors.primary;
     }
@@ -148,6 +151,18 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
           _showErrorSnackBar(state.mensaje);
         } else if (state is PreguntasActionSuccess) {
           _showSuccessSnackBar(state.mensaje);
+        } else if (state is PreguntasLoaded) {
+          final newLength = state.dimensiones.length;
+          if (newLength > 0 && newLength != _tabCount) {
+            _tabController.removeListener(_handleTabSelection);
+            _tabController.dispose();
+            _tabController = TabController(length: newLength, vsync: this);
+            _tabController.addListener(_handleTabSelection);
+            _tabCount = newLength;
+            setState(() {
+              _currentTabColor = _getDimensionColor(_tabController.index + 1);
+            });
+          }
         }
       },
       builder: (context, state) {
@@ -158,9 +173,16 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
           dimensiones = state.dimensiones;
         }
 
-        final dimD1 = dimensiones.firstWhere((d) => d.orden == 1, orElse: () => _emptyDimension(1));
-        final dimD2 = dimensiones.firstWhere((d) => d.orden == 2, orElse: () => _emptyDimension(2));
-        final dimD3 = dimensiones.firstWhere((d) => d.orden == 3, orElse: () => _emptyDimension(3));
+        final listDimensiones = List<DimensionEntity>.from(dimensiones)
+          ..sort((a, b) => a.orden.compareTo(b.orden));
+
+        if (listDimensiones.isEmpty) {
+          listDimensiones.addAll([
+            _emptyDimension(1),
+            _emptyDimension(2),
+            _emptyDimension(3),
+          ]);
+        }
 
         return Scaffold(
           appBar: AppBar(
@@ -220,49 +242,35 @@ class _GestionPreguntasScreenState extends State<GestionPreguntasScreen> with Si
               indicatorWeight: 4.0,
               labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-              tabs: [
-                Tab(
+              tabs: listDimensiones.map((d) {
+                final idx = listDimensiones.indexOf(d);
+                IconData icon;
+                if (idx == 0) icon = Icons.looks_one;
+                else if (idx == 1) icon = Icons.looks_two;
+                else if (idx == 2) icon = Icons.looks_3;
+                else icon = Icons.looks;
+
+                return Tab(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.looks_one, color: _tabController.index == 0 ? _getDimensionColor(1) : Colors.white70),
+                      Icon(
+                        icon, 
+                        color: _tabController.index == idx ? _getDimensionColor(d.orden) : Colors.white70
+                      ),
                       const SizedBox(width: 8),
-                      const Text('D1: Planificación'),
+                      Text('D${d.orden}: ${d.nombre}'),
                     ],
                   ),
-                ),
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.looks_two, color: _tabController.index == 1 ? _getDimensionColor(2) : Colors.white70),
-                      const SizedBox(width: 8),
-                      const Text('D2: Metodología'),
-                    ],
-                  ),
-                ),
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.looks_3, color: _tabController.index == 2 ? _getDimensionColor(3) : Colors.white70),
-                      const SizedBox(width: 8),
-                      const Text('D3: Evaluación'),
-                    ],
-                  ),
-                ),
-              ],
+                );
+              }).toList(),
             ),
           ),
-          body: isLoading && dimensiones.isEmpty
+          body: isLoading && listDimensiones.every((d) => d.reactivos.isEmpty)
               ? const Center(child: CircularProgressIndicator())
               : TabBarView(
                   controller: _tabController,
-                  children: [
-                    _buildDimensionQuestionsList(dimD1, isDark, theme),
-                    _buildDimensionQuestionsList(dimD2, isDark, theme),
-                    _buildDimensionQuestionsList(dimD3, isDark, theme),
-                  ],
+                  children: listDimensiones.map((d) => _buildDimensionQuestionsList(d, isDark, theme)).toList(),
                 ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () => _mostrarDialogoCrearPregunta(dimensiones),

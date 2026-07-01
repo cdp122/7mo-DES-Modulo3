@@ -33,21 +33,25 @@ export class CalculosService {
     return subtotales;
   }
 
-  static calcularIndicesDimensionales(subtotales: {
-    D1: number;
-    D2: number;
-    D3: number;
-  }): { ID1: number; ID2: number; ID3: number } {
+  static calcularIndicesDimensionales(
+    subtotales: { D1: number; D2: number; D3: number },
+    maximoD1 = CalculosService.MAXIMO_POR_DIMENSION,
+    maximoD2 = CalculosService.MAXIMO_POR_DIMENSION,
+    maximoD3 = CalculosService.MAXIMO_POR_DIMENSION
+  ): { ID1: number; ID2: number; ID3: number } {
     return {
-      ID1: (subtotales.D1 / this.MAXIMO_POR_DIMENSION) * 100,
-      ID2: (subtotales.D2 / this.MAXIMO_POR_DIMENSION) * 100,
-      ID3: (subtotales.D3 / this.MAXIMO_POR_DIMENSION) * 100,
+      ID1: maximoD1 > 0 ? (subtotales.D1 / maximoD1) * 100 : 0,
+      ID2: maximoD2 > 0 ? (subtotales.D2 / maximoD2) * 100 : 0,
+      ID3: maximoD3 > 0 ? (subtotales.D3 / maximoD3) * 100 : 0,
     };
   }
 
-  static calcularIGPP(subtotales: { D1: number; D2: number; D3: number }): number {
+  static calcularIGPP(
+    subtotales: { D1: number; D2: number; D3: number },
+    maximoTotal = CalculosService.MAXIMO_TOTAL
+  ): number {
     const total = subtotales.D1 + subtotales.D2 + subtotales.D3;
-    return (total / this.MAXIMO_TOTAL) * 100;
+    return maximoTotal > 0 ? (total / maximoTotal) * 100 : 0;
   }
 
   static determinarDimensionPrioritaria(indices: {
@@ -61,10 +65,6 @@ export class CalculosService {
     return 'D3';
   }
 
-  /**
-   * Rúbrica de interpretación cualitativa.
-   * Aplica tanto al IGPP como a cada ID individual.
-   */
   static mapearNivelCualitativo(porcentaje: number): string {
     if (porcentaje >= 76) return 'Participación auténtica';
     if (porcentaje >= 51) return 'Participación en desarrollo';
@@ -72,10 +72,29 @@ export class CalculosService {
     return 'Planificación adultocéntrica';
   }
 
-  static calcularResultados(respuestas: Respuesta[]): ResultadosEvaluacion {
+  static calcularResultados(respuestas: Respuesta[], dimensiones?: any[]): ResultadosEvaluacion {
+    let countD1 = 5;
+    let countD2 = 5;
+    let countD3 = 5;
+
+    if (dimensiones && dimensiones.length > 0) {
+      const d1Obj = dimensiones.find(d => d.orden === 1 || d.clave === 'D1');
+      const d2Obj = dimensiones.find(d => d.orden === 2 || d.clave === 'D2');
+      const d3Obj = dimensiones.find(d => d.orden === 3 || d.clave === 'D3');
+
+      if (d1Obj) countD1 = d1Obj.reactivos.length;
+      if (d2Obj) countD2 = d2Obj.reactivos.length;
+      if (d3Obj) countD3 = d3Obj.reactivos.length;
+    }
+
+    const maxD1 = countD1 * this.VALOR_MAXIMO;
+    const maxD2 = countD2 * this.VALOR_MAXIMO;
+    const maxD3 = countD3 * this.VALOR_MAXIMO;
+    const maxTotal = maxD1 + maxD2 + maxD3;
+
     const subtotales = this.calcularSubtotales(respuestas);
-    const indices = this.calcularIndicesDimensionales(subtotales);
-    const igpp = this.calcularIGPP(subtotales);
+    const indices = this.calcularIndicesDimensionales(subtotales, maxD1, maxD2, maxD3);
+    const igpp = this.calcularIGPP(subtotales, maxTotal);
     const dimensionPrioritaria = this.determinarDimensionPrioritaria(indices);
 
     return {
@@ -86,37 +105,62 @@ export class CalculosService {
     };
   }
 
-  // ── Nuevos métodos para métricas interpretadas ──────────────────
-
-  /**
-   * Interpreta los resultados de una evaluación individual.
-   * Devuelve puntajes, porcentajes y lectura cualitativa por dimensión + global.
-   */
-  static interpretarResultados(evaluacion: Evaluacion): ResultadosInterpretados {
+  static interpretarResultados(evaluacion: Evaluacion, dimensiones?: any[]): ResultadosInterpretados {
     const { subtotales, indices_dimensionales, IGPP, dimension_prioritaria } = evaluacion.resultados;
 
-    const dimensiones: InterpretacionDimension[] = [
+    let countD1 = 5;
+    let countD2 = 5;
+    let countD3 = 5;
+    let nameD1 = NOMBRES_DIMENSIONES.D1;
+    let nameD2 = NOMBRES_DIMENSIONES.D2;
+    let nameD3 = NOMBRES_DIMENSIONES.D3;
+
+    if (dimensiones && dimensiones.length > 0) {
+      const d1Obj = dimensiones.find(d => d.orden === 1 || d.clave === 'D1');
+      const d2Obj = dimensiones.find(d => d.orden === 2 || d.clave === 'D2');
+      const d3Obj = dimensiones.find(d => d.orden === 3 || d.clave === 'D3');
+
+      if (d1Obj) {
+        countD1 = d1Obj.reactivos.length;
+        nameD1 = d1Obj.nombre;
+      }
+      if (d2Obj) {
+        countD2 = d2Obj.reactivos.length;
+        nameD2 = d2Obj.nombre;
+      }
+      if (d3Obj) {
+        countD3 = d3Obj.reactivos.length;
+        nameD3 = d3Obj.nombre;
+      }
+    }
+
+    const maxD1 = countD1 * this.VALOR_MAXIMO;
+    const maxD2 = countD2 * this.VALOR_MAXIMO;
+    const maxD3 = countD3 * this.VALOR_MAXIMO;
+    const maxTotal = maxD1 + maxD2 + maxD3;
+
+    const dimensionesInterpretadas: InterpretacionDimension[] = [
       {
-        nombre: NOMBRES_DIMENSIONES.D1,
+        nombre: nameD1,
         clave: 'D1',
         puntaje: subtotales.D1,
-        maximo: this.MAXIMO_POR_DIMENSION,
+        maximo: maxD1,
         porcentaje: Math.round(indices_dimensionales.ID1 * 100) / 100,
         nivel: this.mapearNivelCualitativo(indices_dimensionales.ID1),
       },
       {
-        nombre: NOMBRES_DIMENSIONES.D2,
+        nombre: nameD2,
         clave: 'D2',
         puntaje: subtotales.D2,
-        maximo: this.MAXIMO_POR_DIMENSION,
+        maximo: maxD2,
         porcentaje: Math.round(indices_dimensionales.ID2 * 100) / 100,
         nivel: this.mapearNivelCualitativo(indices_dimensionales.ID2),
       },
       {
-        nombre: NOMBRES_DIMENSIONES.D3,
+        nombre: nameD3,
         clave: 'D3',
         puntaje: subtotales.D3,
-        maximo: this.MAXIMO_POR_DIMENSION,
+        maximo: maxD3,
         porcentaje: Math.round(indices_dimensionales.ID3 * 100) / 100,
         nivel: this.mapearNivelCualitativo(indices_dimensionales.ID3),
       },
@@ -124,24 +168,57 @@ export class CalculosService {
 
     const puntajeTotal = subtotales.D1 + subtotales.D2 + subtotales.D3;
 
+    const nombrePrioritaria = 
+      dimension_prioritaria === 'D1' ? nameD1 :
+      dimension_prioritaria === 'D2' ? nameD2 :
+      dimension_prioritaria === 'D3' ? nameD3 :
+      (NOMBRES_DIMENSIONES[dimension_prioritaria] || dimension_prioritaria);
+
     return {
       evaluacion_id: evaluacion.id,
       docente_cedula: evaluacion.cedula_docente,
-      dimensiones,
+      dimensiones: dimensionesInterpretadas,
       puntaje_total: puntajeTotal,
-      maximo_total: this.MAXIMO_TOTAL,
+      maximo_total: maxTotal,
       IGPP: Math.round(IGPP * 100) / 100,
       nivel_general: this.mapearNivelCualitativo(IGPP),
-      dimension_prioritaria: NOMBRES_DIMENSIONES[dimension_prioritaria] || dimension_prioritaria,
+      dimension_prioritaria: nombrePrioritaria,
     };
   }
 
-  /**
-   * Calcula un resumen general a partir de todas las evaluaciones.
-   * Promedia subtotales y porcentajes de manera global.
-   */
-  static calcularResumenGeneral(evaluaciones: Evaluacion[]): ResumenGeneral {
+  static calcularResumenGeneral(evaluaciones: Evaluacion[], dimensiones?: any[]): ResumenGeneral {
     const total = evaluaciones.length;
+
+    let countD1 = 5;
+    let countD2 = 5;
+    let countD3 = 5;
+    let nameD1 = NOMBRES_DIMENSIONES.D1;
+    let nameD2 = NOMBRES_DIMENSIONES.D2;
+    let nameD3 = NOMBRES_DIMENSIONES.D3;
+
+    if (dimensiones && dimensiones.length > 0) {
+      const d1Obj = dimensiones.find(d => d.orden === 1 || d.clave === 'D1');
+      const d2Obj = dimensiones.find(d => d.orden === 2 || d.clave === 'D2');
+      const d3Obj = dimensiones.find(d => d.orden === 3 || d.clave === 'D3');
+
+      if (d1Obj) {
+        countD1 = d1Obj.reactivos.length;
+        nameD1 = d1Obj.nombre;
+      }
+      if (d2Obj) {
+        countD2 = d2Obj.reactivos.length;
+        nameD2 = d2Obj.nombre;
+      }
+      if (d3Obj) {
+        countD3 = d3Obj.reactivos.length;
+        nameD3 = d3Obj.nombre;
+      }
+    }
+
+    const maxD1 = countD1 * this.VALOR_MAXIMO;
+    const maxD2 = countD2 * this.VALOR_MAXIMO;
+    const maxD3 = countD3 * this.VALOR_MAXIMO;
+    const maxTotal = maxD1 + maxD2 + maxD3;
 
     if (total === 0) {
       return {
@@ -152,9 +229,9 @@ export class CalculosService {
         promedio_IGPP: 0,
         nivel_general: this.mapearNivelCualitativo(0),
         dimensiones: [
-          { nombre: NOMBRES_DIMENSIONES.D1, clave: 'D1', puntaje: 0, maximo: this.MAXIMO_POR_DIMENSION, porcentaje: 0, nivel: this.mapearNivelCualitativo(0) },
-          { nombre: NOMBRES_DIMENSIONES.D2, clave: 'D2', puntaje: 0, maximo: this.MAXIMO_POR_DIMENSION, porcentaje: 0, nivel: this.mapearNivelCualitativo(0) },
-          { nombre: NOMBRES_DIMENSIONES.D3, clave: 'D3', puntaje: 0, maximo: this.MAXIMO_POR_DIMENSION, porcentaje: 0, nivel: this.mapearNivelCualitativo(0) },
+          { nombre: nameD1, clave: 'D1', puntaje: 0, maximo: maxD1, porcentaje: 0, nivel: this.mapearNivelCualitativo(0) },
+          { nombre: nameD2, clave: 'D2', puntaje: 0, maximo: maxD2, porcentaje: 0, nivel: this.mapearNivelCualitativo(0) },
+          { nombre: nameD3, clave: 'D3', puntaje: 0, maximo: maxD3, porcentaje: 0, nivel: this.mapearNivelCualitativo(0) },
         ],
       };
     }
@@ -173,9 +250,9 @@ export class CalculosService {
     const promD3 = sumaD3 / total;
     const promIGPP = sumaIGPP / total;
 
-    const porcD1 = (promD1 / this.MAXIMO_POR_DIMENSION) * 100;
-    const porcD2 = (promD2 / this.MAXIMO_POR_DIMENSION) * 100;
-    const porcD3 = (promD3 / this.MAXIMO_POR_DIMENSION) * 100;
+    const porcD1 = maxD1 > 0 ? (promD1 / maxD1) * 100 : 0;
+    const porcD2 = maxD2 > 0 ? (promD2 / maxD2) * 100 : 0;
+    const porcD3 = maxD3 > 0 ? (promD3 / maxD3) * 100 : 0;
 
     return {
       total_evaluaciones: total,
@@ -186,26 +263,26 @@ export class CalculosService {
       nivel_general: this.mapearNivelCualitativo(promIGPP),
       dimensiones: [
         {
-          nombre: NOMBRES_DIMENSIONES.D1,
+          nombre: nameD1,
           clave: 'D1',
           puntaje: Math.round(promD1 * 100) / 100,
-          maximo: this.MAXIMO_POR_DIMENSION,
+          maximo: maxD1,
           porcentaje: Math.round(porcD1 * 100) / 100,
           nivel: this.mapearNivelCualitativo(porcD1),
         },
         {
-          nombre: NOMBRES_DIMENSIONES.D2,
+          nombre: nameD2,
           clave: 'D2',
           puntaje: Math.round(promD2 * 100) / 100,
-          maximo: this.MAXIMO_POR_DIMENSION,
+          maximo: maxD2,
           porcentaje: Math.round(porcD2 * 100) / 100,
           nivel: this.mapearNivelCualitativo(porcD2),
         },
         {
-          nombre: NOMBRES_DIMENSIONES.D3,
+          nombre: nameD3,
           clave: 'D3',
           puntaje: Math.round(promD3 * 100) / 100,
-          maximo: this.MAXIMO_POR_DIMENSION,
+          maximo: maxD3,
           porcentaje: Math.round(porcD3 * 100) / 100,
           nivel: this.mapearNivelCualitativo(porcD3),
         },

@@ -54,7 +54,7 @@ class ResultadosInterpretadosEntity {
     return ResultadosInterpretadosEntity(
       evaluacionId: json['evaluacion_id'] as String,
       docenteCedula: json['docente_cedula'] as String,
-      docenteNombre: json['docente_nombre'] as String,
+      docenteNombre: json['docente_nombre'] as String? ?? 'Docente',
       dimensiones: (json['dimensiones'] as List<dynamic>)
           .map((d) => InterpretacionDimensionEntity.fromJson(d as Map<String, dynamic>))
           .toList(),

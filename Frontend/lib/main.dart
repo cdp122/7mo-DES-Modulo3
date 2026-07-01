@@ -26,8 +26,8 @@ class MyApp extends StatelessWidget {
         title: 'Sistema de Encuestas',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system, // Switch light/dark mode based on device settings
+        darkTheme: AppTheme.lightTheme,
+        themeMode: ThemeMode.light,
         routerConfig: AppRouter.router,
       ),
     );

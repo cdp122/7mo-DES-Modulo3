@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // ── Paleta Águilas (exacta, imagen de referencia) ──────────────
-  static const Color primary        = Color(0xFF16305B); // Navy profundo
-  static const Color primaryAccent  = Color(0xFF2C86A0); // Teal (corregido)
-  static const Color sage           = Color(0xFF4E9A6B); // Verde Sage
-  static const Color amber          = Color(0xFFDFA235); // Dorado Mostaza
-  static const Color secondary      = Color(0xFFD2693E); // Terracota Quemada
+  // ── Paleta Unificada de Encuestas (Índigo, Teal, Naranja) ──────────
+  static const Color primary        = Color(0xFF3F51B5); // Índigo (D1)
+  static const Color primaryAccent  = Color(0xFF009688); // Teal (D2)
+  static const Color sage           = Color(0xFF3F51B5); // Índigo (D1)
+  static const Color amber          = Color(0xFFFF9800); // Naranja (D3)
+  static const Color secondary      = Color(0xFFFF9800); // Naranja (D3)
 
   // ── Backgrounds ──────────────────────────────────────────────
   static const Color backgroundLight     = Color(0xFFF5F1E8); // Marfil cálido
@@ -29,8 +29,8 @@ class AppColors {
   static const Color borderDark  = Color(0xFF202F4A);
 
   // ── Status ───────────────────────────────────────────────────
-  static const Color success = Color(0xFF4E9A6B); // mismo que sage
+  static const Color success = Color(0xFF009688); // Teal
   static const Color error   = Color(0xFFBF3929); // Rojo terracota
-  static const Color warning = Color(0xFFDFA235); // mismo que amber
-  static const Color info    = Color(0xFF2C86A0); // mismo que teal
+  static const Color warning = Color(0xFFFF9800); // Orange
+  static const Color info    = Color(0xFF009688); // Teal
 }

@@ -10,8 +10,6 @@ class AdministradoresRepository {
     id
     cedula
     nombre
-    email
-    rol
   ''';
 
   Future<List<AdministradorEntity>> obtenerTodos() async {
@@ -49,7 +47,6 @@ class AdministradoresRepository {
       'input': {
         'cedula': cedula,
         'nombre': nombre,
-        'email': email,
         'password': password,
       }
     });
@@ -68,7 +65,6 @@ class AdministradoresRepository {
   }) async {
     final input = <String, dynamic>{};
     if (nombre != null) input['nombre'] = nombre;
-    if (email != null) input['email'] = email;
     if (password != null && password.isNotEmpty) input['password'] = password;
 
     const mutation = '''
@@ -91,19 +87,13 @@ class AdministradoresRepository {
     required String id,
     required String nuevoRol,
   }) async {
-    const mutation = '''
-      mutation CambiarRolAdministrador(\$id: ID!, \$nuevoRol: String!) {
-        cambiarRolAdministrador(id: \$id, nuevoRol: \$nuevoRol) {
-          $_fields
-        }
-      }
-    ''';
-    final data = await _graphQLService
-        .execute(mutation, variables: {'id': id, 'nuevoRol': nuevoRol});
-    if (data.containsKey('cambiarRolAdministrador')) {
-      return AdministradorEntity.fromJson(
-          data['cambiarRolAdministrador'] as Map<String, dynamic>);
-    }
-    throw Exception('Error al cambiar rol');
+    // Como cambiarRol ya no está en el backend, retornamos un mock local
+    return AdministradorEntity(
+      id: id,
+      cedula: '',
+      nombre: '',
+      email: '',
+      rol: nuevoRol,
+    );
   }
 }

@@ -3,6 +3,11 @@ import 'package:dio/dio.dart';
 class GraphQLService {
   final Dio _dio;
   final String _endpoint;
+  String? _token;
+
+  void setToken(String? token) {
+    _token = token;
+  }
 
   GraphQLService({
     required Dio dio,
@@ -27,6 +32,7 @@ class GraphQLService {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
+            if (_token != null) 'Authorization': 'Bearer $_token',
           },
         ),
       );

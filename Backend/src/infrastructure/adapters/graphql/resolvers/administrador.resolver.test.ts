@@ -200,7 +200,9 @@ describe('Administrador Resolver - Autenticación JWT (CP-A01 a CP-A05)', () => 
     }
   });
 
-  it('CP-A05: Debe rechazar buscarAdminPorCedula sin JWT', async () => {
+  it('CP-A05: Debe permitir buscarAdminPorCedula sin JWT', async () => {
+    await crearAdminTest('1718056490');
+
     const resultado = await servidorApollo.executeOperation(
       {
         query: `
@@ -218,8 +220,8 @@ describe('Administrador Resolver - Autenticación JWT (CP-A01 a CP-A05)', () => 
 
     expect(resultado.body.kind).toBe('single');
     if (resultado.body.kind === 'single') {
-      expect(resultado.body.singleResult.errors).toBeDefined();
-      expect(resultado.body.singleResult.errors?.[0]?.message).toContain('No autenticado');
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      expect(resultado.body.singleResult.data?.buscarAdminPorCedula.cedula).toBe('1718056490');
     }
   });
 

@@ -777,12 +777,14 @@ class _AdminCardState extends State<_AdminCard>
                           color: widget.isDark
                               ? Colors.white.withValues(alpha: 0.45)
                               : Colors.black.withValues(alpha: 0.4))),
-                  Text(a.email,
-                      style: _outfit(11.5,
-                          color: widget.isDark
-                              ? Colors.white.withValues(alpha: 0.35)
-                              : Colors.black.withValues(alpha: 0.32)),
-                      overflow: TextOverflow.ellipsis),
+                  if (a.email.isNotEmpty) ...[
+                    Text(a.email,
+                        style: _outfit(11.5,
+                            color: widget.isDark
+                                ? Colors.white.withValues(alpha: 0.35)
+                                : Colors.black.withValues(alpha: 0.32)),
+                        overflow: TextOverflow.ellipsis),
+                  ],
                   const SizedBox(height: 8),
                   // Chip de rol
                   _RolChip(rol: a.rol),
@@ -798,15 +800,6 @@ class _AdminCardState extends State<_AdminCard>
                   isDark: widget.isDark,
                   onTap: widget.onEditar,
                 ),
-                const SizedBox(height: 8),
-                if (!widget.esPropioAdmin)
-                  _ActionBtn(
-                    icon: Icons.swap_horiz_rounded,
-                    color: _P.amber,
-                    tooltip: 'Cambiar rol',
-                    isDark: widget.isDark,
-                    onTap: widget.onCambiarRol,
-                  ),
               ]),
             ]),
           ),
@@ -933,7 +926,7 @@ class _FormAdminDialogState extends State<_FormAdminDialog> {
       widget.onGuardar(
         _cedulaCtrl.text.trim(),
         _nombreCtrl.text.trim(),
-        _emailCtrl.text.trim(),
+        "",
         _passCtrl.text.trim().isNotEmpty ? _passCtrl.text.trim() : null,
       );
       Navigator.pop(context);
@@ -1006,21 +999,7 @@ class _FormAdminDialogState extends State<_FormAdminDialog> {
               ),
               const SizedBox(height: 14),
 
-              // Email
-              _Campo(
-                ctrl: _emailCtrl,
-                label: 'Correo electrónico',
-                icon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) {
-                    return 'El email es obligatorio';
-                  }
-                  if (!v.contains('@')) return 'Email inválido';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 14),
+
 
               // Contraseña
               TextFormField(

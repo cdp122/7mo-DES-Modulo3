@@ -36,7 +36,7 @@ class AdministradorEntity {
       id: json['id'] as String,
       cedula: json['cedula'] as String,
       nombre: json['nombre'] as String,
-      email: json['email'] as String,
+      email: json['email'] as String? ?? '',
       rol: json['rol'] as String? ?? 'admin',
     );
   }

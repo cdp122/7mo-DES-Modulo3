@@ -25,9 +25,6 @@ export const administradorResolvers = {
       return administradorRepo.obtenerPorId(context.administrador.id);
     },
     buscarAdminPorCedula: async (_: any, { cedula }: { cedula: string }, context: any) => {
-      if (!context.administrador) {
-        throw new Error('No autenticado. Se requiere token JWT.');
-      }
       return administradorRepo.buscarPorCedula(cedula);
     },
   },

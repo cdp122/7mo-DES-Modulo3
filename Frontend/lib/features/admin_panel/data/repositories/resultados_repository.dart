@@ -41,11 +41,10 @@ class ResultadosRepository {
     String cedula,
   ) async {
     const query = r'''
-      query ObtenerResultadosPorDocente($cedula: String!) {
+      query ObtenerResultadosPorDocente($cedula: CedulaEcuatoriana!) {
         obtenerResultadosPorDocente(cedula: $cedula) {
           evaluacion_id
           docente_cedula
-          docente_nombre
           dimensiones {
             nombre
             clave
@@ -88,7 +87,6 @@ class ResultadosRepository {
         obtenerResultadosEvaluacion(id: $id) {
           evaluacion_id
           docente_cedula
-          docente_nombre
           dimensiones {
             nombre
             clave
