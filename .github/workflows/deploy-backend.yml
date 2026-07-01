@@ -3,7 +3,7 @@ name: Deploy Backend to Azure App Service
 on:
   push:
     branches:
-      - main # O el nombre de tu rama principal (ej. master)
+      - master # O el nombre de tu rama principal (ej. master)
     paths:
       - 'Backend/**' # Solo se ejecuta si cambian archivos del backend
 
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: './Backend/package-lock.json'
 
@@ -31,6 +31,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'fecyt-backend-api' # Cambia por el nombre de tu App Service (ej. fecyt-backend-api)
+          app-name: 'semi-api' # Cambia por el nombre de tu App Service (ej. fecyt-backend-api)
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: './Backend' # Despliega la carpeta del backend compilada
