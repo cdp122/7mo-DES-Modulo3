@@ -1,0 +1,41 @@
+name: Deploy Frontend (Flutter Web) to Azure Static Web Apps
+
+on:
+  push:
+    branches:
+      - master # O la rama principal de tu repositorio
+    paths:
+      - 'Frontend/**' # Solo se activa al cambiar archivos del frontend
+  workflow_dispatch: # Permite ejecución manual desde la pestaña Actions
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        working-directory: ./Frontend
+        run: flutter pub get
+
+      - name: Build Flutter Web (Release)
+        working-directory: ./Frontend
+        run: |
+          flutter build web --release --dart-define=API_URL=https://semi-api-c0b0gpgyc2a7eaab.westus-01.azurewebsites.net
+
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: 'upload'
+          app_location: 'Frontend' # Carpeta raíz de la aplicación
+          skip_app_build: true # Indica que ya compilamos el proyecto en el runner y evite que Oryx falle
+          output_location: 'Frontend/build/web' # Ubicación física de la compilación web
