@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/network/audio_service.dart';
+import '../../../../core/validators/cedula_ecuatoriana_validator.dart';
 
 class PortadaScreen extends StatefulWidget {
   final String cedulaDocente;
@@ -32,6 +33,11 @@ class _PortadaScreenState extends State<PortadaScreen> with SingleTickerProvider
     );
 
     _reproducirMusica();
+    
+    // Validar cédula ecuatoriana
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validarCedula();
+    });
   }
 
   Future<void> _reproducirMusica() async {
@@ -39,6 +45,29 @@ class _PortadaScreenState extends State<PortadaScreen> with SingleTickerProvider
       await AudioService().playBackgroundMusic();
     } catch (e) {
       debugPrint('Error iniciando música global: $e');
+    }
+  }
+
+  void _validarCedula() {
+    if (!CedulaEcuatorianaValidator.esValida(widget.cedulaDocente)) {
+      final mensaje = CedulaEcuatorianaValidator.obtenerMensajeError(widget.cedulaDocente);
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: const Text('Cédula Inválida'),
+          content: Text(mensaje),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                context.go('/');
+              },
+              child: const Text('Regresar'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
