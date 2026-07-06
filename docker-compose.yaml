@@ -1,0 +1,51 @@
+services:
+  # 1. Base de Datos
+  mongodb:
+    image: mongo:7.0
+    container_name: mongo-local-tx
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      # Se modifica el host del replica set para que use la red interna de Docker
+      test: |
+        mongosh --eval "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}); }"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Backend (Node.js + GraphQL)
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: backend_modulo3
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - NODE_ENV=development
+      - JWT_SECRET=tu_secreto_aqui
+      - JWT_EXPIRES_IN=24h
+      # La URI de conexión obligatoriamente debe incluir el replicaSet para permitir transacciones
+      - MONGODB_URI=mongodb://mongodb:27017/7mo_des_modulo3?replicaSet=rs0
+    depends_on:
+      mongodb:
+        # El backend esperará estrictamente a que el Replica Set esté inicializado
+        condition: service_healthy
+
+  # 3. Frontend (Flutter Web + Nginx)
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: frontend_modulo3
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
