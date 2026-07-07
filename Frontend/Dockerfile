@@ -25,6 +25,7 @@ RUN flutter build web --release
 
 # --- Etapa 2: Servidor de producción ---
 FROM nginx:alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

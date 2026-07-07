@@ -2,12 +2,12 @@ services:
   # 1. Base de Datos
   mongodb:
     image: mongo:7.0
-    container_name: mongo-local-tx
+    container_name: mongo-conjunto-tx
     command: ["--replSet", "rs0", "--bind_ip_all"]
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
-      - mongo_data:/data/db
+      - mongo_conjunto_data:/data/db
     healthcheck:
       # Se modifica el host del replica set para que use la red interna de Docker
       test: |
@@ -48,4 +48,4 @@ services:
       - backend
 
 volumes:
-  mongo_data:
+  mongo_conjunto_data:
