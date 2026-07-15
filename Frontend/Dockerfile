@@ -1,0 +1,31 @@
+# --- Etapa 1: Compilación de Flutter Web ---
+FROM debian:stable-slim AS build-env
+
+RUN apt-get update && apt-get install -y \
+    curl git unzip xz-utils zip libglu1-mesa wget \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -ms /bin/bash flutteruser
+RUN git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /flutter \
+    && chown -R flutteruser:flutteruser /flutter
+
+WORKDIR /app
+RUN chown -R flutteruser:flutteruser /app
+
+ENV PATH="$PATH:/flutter/bin"
+USER flutteruser
+
+RUN flutter precache --web
+COPY --chown=flutteruser:flutteruser pubspec.yaml ./
+RUN flutter pub get
+
+COPY --chown=flutteruser:flutteruser . .
+RUN flutter config --enable-web
+RUN flutter build web --release
+
+# --- Etapa 2: Servidor de producción ---
+FROM nginx:alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build-env /app/build/web /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

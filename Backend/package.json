@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "build": "tsc",
+    "build": "tsc && copyfiles -u 1 \"src/**/*.graphql\" dist",
     "start": "node dist/index.js",
     "test": "vitest --config tests/vitest.config.ts",
     "test:run": "vitest run --config tests/vitest.config.ts",
@@ -37,6 +37,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.0.0",
     "@vitest/coverage-v8": "^4.1.9",
+    "copyfiles": "^2.4.1",
     "mongodb-memory-server": "^11.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
