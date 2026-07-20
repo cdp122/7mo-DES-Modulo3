@@ -1,0 +1,47 @@
+@startuml Diagrama_Proceso_Autenticacion
+
+|#E3F2FD|Usuario|
+start
+:Ingresar número de cédula;
+
+|#E8F5E9|Sistema|
+:Verificar el rol asociado a la cédula;
+
+if (¿Es Administrador?) then (sí)
+  :Presentar opciones de ingreso (Encuesta / Panel Admin);
+  
+  if (¿Opción seleccionada?) then (Panel Admin)
+    |#E8F5E9|Sistema|
+    :Solicitar contraseña de administrador;
+    
+    |#E3F2FD|Usuario|
+    repeat
+      :Ingresar contraseña;
+      
+      |#E8F5E9|Sistema|
+      if (¿Contraseña correcta?) then (sí)
+        :Autenticar y otorgar permisos de administrador;
+        |#E3F2FD|Usuario|
+        :Ingresar al Panel de Administración;
+        stop
+      else (no)
+        |#E8F5E9|Sistema|
+        :Mostrar mensaje de error;
+      endif
+    |#E3F2FD|Usuario|
+    repeat while (¿Reintentar?) is (sí)
+    ->no;
+    |#E8F5E9|Sistema|
+    :Cancelar autenticación y volver al inicio;
+    stop
+  else (Encuesta)
+    |#E8F5E9|Sistema|
+  endif
+else (no)
+  |#E8F5E9|Sistema|
+endif
+
+|#E3F2FD|Usuario|
+:Acceder a la Encuesta Docente;
+stop
+@enduml
