@@ -156,3 +156,215 @@ describe('CalculosService.calcularResultados - Caminos base (CP-10 a CP-12)', ()
     expect(resultado.indices_dimensionales.ID2).toBeLessThan(resultado.indices_dimensionales.ID3);
   });
 });
+
+// ─── CP-13 a CP-16: interpretarResultados (sin tests previos) ───────────────
+
+describe('CalculosService.interpretarResultados (CP-13 a CP-16)', () => {
+  const crearEvaluacion = (
+    subtotales: { D1: number; D2: number; D3: number },
+    indices: { ID1: number; ID2: number; ID3: number },
+    igpp: number,
+    dimensionPrioritaria: string
+  ) => ({
+    id: 'eval-001',
+    cedula_docente: '1718056490',
+    respuestas: [],
+    comentarios: { compromiso_personal: null, opiniones_programa: null },
+    resultados: {
+      subtotales,
+      indices_dimensionales: indices,
+      IGPP: igpp,
+      dimension_prioritaria: dimensionPrioritaria,
+    },
+    version: 'V6.7.01',
+    fecha_registro: new Date(),
+  });
+
+  it('CP-13: Con dimensiones estándar (5 reactivos), retorna las 3 dimensiones interpretadas con nombre, puntaje, máximo y nivel', () => {
+    const dimensiones = dimensionesBD({ d1: 5, d2: 5, d3: 5 });
+    const evaluacion = crearEvaluacion(
+      { D1: 16, D2: 12, D3: 19 },
+      { ID1: 80, ID2: 60, ID3: 95 },
+      78.33,
+      'D2'
+    );
+
+    const resultado = CalculosService.interpretarResultados(evaluacion, dimensiones);
+
+    expect(resultado.evaluacion_id).toBe('eval-001');
+    expect(resultado.docente_cedula).toBe('1718056490');
+    expect(resultado.dimensiones).toHaveLength(3);
+    expect(resultado.dimensiones[0].nombre).toBe('Participación infantil');
+    expect(resultado.dimensiones[0].puntaje).toBe(16);
+    expect(resultado.dimensiones[0].maximo).toBe(20);
+    expect(resultado.dimensiones[1].nombre).toBe('Voz del niño');
+    expect(resultado.dimensiones[1].puntaje).toBe(12);
+    expect(resultado.puntaje_total).toBe(47);
+    expect(resultado.maximo_total).toBe(60);
+  });
+
+  it('CP-14: Con dimensiones personalizadas (conteo dinámico de reactivos), los máximos se ajustan', () => {
+    const dimensiones = [
+      { orden: 1, clave: 'D1', nombre: 'Dim Custom 1', reactivos: Array(3).fill({}) },
+      { orden: 2, clave: 'D2', nombre: 'Dim Custom 2', reactivos: Array(4).fill({}) },
+      { orden: 3, clave: 'D3', nombre: 'Dim Custom 3', reactivos: Array(6).fill({}) },
+    ];
+    const evaluacion = crearEvaluacion(
+      { D1: 10, D2: 14, D3: 20 },
+      { ID1: 83.33, ID2: 87.5, ID3: 83.33 },
+      84.62,
+      'D1'
+    );
+
+    const resultado = CalculosService.interpretarResultados(evaluacion, dimensiones);
+
+    expect(resultado.dimensiones[0].maximo).toBe(12); // 3 * 4
+    expect(resultado.dimensiones[1].maximo).toBe(16); // 4 * 4
+    expect(resultado.dimensiones[2].maximo).toBe(24); // 6 * 4
+    expect(resultado.maximo_total).toBe(52);
+    expect(resultado.dimensiones[0].nombre).toBe('Dim Custom 1');
+  });
+
+  it('CP-15: Los niveles cualitativos se asignan correctamente por dimensión', () => {
+    const dimensiones = dimensionesBD({ d1: 5, d2: 5, d3: 5 });
+    const evaluacion = crearEvaluacion(
+      { D1: 20, D2: 10, D3: 4 },
+      { ID1: 100, ID2: 50, ID3: 20 },
+      56.67,
+      'D3'
+    );
+
+    const resultado = CalculosService.interpretarResultados(evaluacion, dimensiones);
+
+    expect(resultado.dimensiones[0].nivel).toBe('Participación auténtica');    // 100%
+    expect(resultado.dimensiones[1].nivel).toBe('Participación incipiente');     // 50%
+    expect(resultado.dimensiones[2].nivel).toBe('Planificación adultocéntrica'); // 20%
+  });
+
+  it('CP-16: Con dimensión prioritaria D3, el nombre de la dimensión prioritaria se resuelve correctamente', () => {
+    const dimensiones = dimensionesBD({ d1: 5, d2: 5, d3: 5 });
+    const evaluacion = crearEvaluacion(
+      { D1: 18, D2: 16, D3: 8 },
+      { ID1: 90, ID2: 80, ID3: 40 },
+      70,
+      'D3'
+    );
+
+    const resultado = CalculosService.interpretarResultados(evaluacion, dimensiones);
+
+    expect(resultado.dimension_prioritaria).toBe('Relación simétrica');
+  });
+});
+
+// ─── CP-17 a CP-20: calcularResumenGeneral (sin tests previos) ──────────────
+
+describe('CalculosService.calcularResumenGeneral (CP-17 a CP-20)', () => {
+  const crearEvaluacionSimple = (d1: number, d2: number, d3: number, igpp: number) => ({
+    id: `eval-${Math.random()}`,
+    cedula_docente: '1718056490',
+    respuestas: [],
+    comentarios: { compromiso_personal: null, opiniones_programa: null },
+    resultados: {
+      subtotales: { D1: d1, D2: d2, D3: d3 },
+      indices_dimensionales: { ID1: 0, ID2: 0, ID3: 0 },
+      IGPP: igpp,
+      dimension_prioritaria: 'D1',
+    },
+    version: 'V6.7.01',
+    fecha_registro: new Date(),
+  });
+
+  it('CP-17: Con 0 evaluaciones retorna promedios en 0 y nivel "Planificación adultocéntrica"', () => {
+    const resultado = CalculosService.calcularResumenGeneral([]);
+
+    expect(resultado.total_evaluaciones).toBe(0);
+    expect(resultado.promedio_D1).toBe(0);
+    expect(resultado.promedio_D2).toBe(0);
+    expect(resultado.promedio_D3).toBe(0);
+    expect(resultado.promedio_IGPP).toBe(0);
+    expect(resultado.nivel_general).toBe('Planificación adultocéntrica');
+    expect(resultado.dimensiones).toHaveLength(3);
+  });
+
+  it('CP-18: Con 1 evaluación, los promedios coinciden con los subtotales de esa evaluación', () => {
+    const evaluaciones = [crearEvaluacionSimple(16, 12, 19, 78.33)];
+    const dimensiones = dimensionesBD({ d1: 5, d2: 5, d3: 5 });
+
+    const resultado = CalculosService.calcularResumenGeneral(evaluaciones, dimensiones);
+
+    expect(resultado.total_evaluaciones).toBe(1);
+    expect(resultado.promedio_D1).toBe(16);
+    expect(resultado.promedio_D2).toBe(12);
+    expect(resultado.promedio_D3).toBe(19);
+    expect(resultado.promedio_IGPP).toBe(78.33);
+  });
+
+  it('CP-19: Con múltiples evaluaciones calcula promedios correctamente', () => {
+    const evaluaciones = [
+      crearEvaluacionSimple(20, 20, 20, 100),
+      crearEvaluacionSimple(10, 10, 10, 50),
+    ];
+    const dimensiones = dimensionesBD({ d1: 5, d2: 5, d3: 5 });
+
+    const resultado = CalculosService.calcularResumenGeneral(evaluaciones, dimensiones);
+
+    expect(resultado.total_evaluaciones).toBe(2);
+    expect(resultado.promedio_D1).toBe(15);
+    expect(resultado.promedio_D2).toBe(15);
+    expect(resultado.promedio_D3).toBe(15);
+    expect(resultado.promedio_IGPP).toBe(75);
+    expect(resultado.nivel_general).toBe('Participación en desarrollo');
+  });
+
+  it('CP-20: Con dimensiones personalizadas, los máximos de las dimensiones se ajustan', () => {
+    const evaluaciones = [crearEvaluacionSimple(12, 8, 20, 76.92)];
+    const dimensiones = [
+      { orden: 1, clave: 'D1', nombre: 'Custom D1', reactivos: Array(4).fill({}) },
+      { orden: 2, clave: 'D2', nombre: 'Custom D2', reactivos: Array(3).fill({}) },
+      { orden: 3, clave: 'D3', nombre: 'Custom D3', reactivos: Array(6).fill({}) },
+    ];
+
+    const resultado = CalculosService.calcularResumenGeneral(evaluaciones, dimensiones);
+
+    expect(resultado.dimensiones[0].maximo).toBe(16); // 4 * 4
+    expect(resultado.dimensiones[1].maximo).toBe(12); // 3 * 4
+    expect(resultado.dimensiones[2].maximo).toBe(24); // 6 * 4
+    expect(resultado.dimensiones[0].nombre).toBe('Custom D1');
+  });
+});
+
+// ─── CP-21 a CP-24: mapearNivelCualitativo — valores límite adicionales ─────
+
+describe('CalculosService.mapearNivelCualitativo - Valores límite adicionales (CP-21 a CP-24)', () => {
+  it('CP-21: 51% (límite inferior de "Participación en desarrollo")', () => {
+    expect(CalculosService.mapearNivelCualitativo(51)).toBe('Participación en desarrollo');
+  });
+
+  it('CP-22: 26% (límite inferior de "Participación incipiente")', () => {
+    expect(CalculosService.mapearNivelCualitativo(26)).toBe('Participación incipiente');
+  });
+
+  it('CP-23: 25.99% (justo debajo del límite → "Planificación adultocéntrica")', () => {
+    expect(CalculosService.mapearNivelCualitativo(25.99)).toBe('Planificación adultocéntrica');
+  });
+
+  it('CP-24: Extremos (0% y 100%)', () => {
+    expect(CalculosService.mapearNivelCualitativo(0)).toBe('Planificación adultocéntrica');
+    expect(CalculosService.mapearNivelCualitativo(100)).toBe('Participación auténtica');
+  });
+});
+
+// ─── CP-25 y CP-26: Casos borde (arreglo vacío y división por cero) ─────────
+
+describe('CalculosService - Casos borde (CP-25 y CP-26)', () => {
+  it('CP-25: calcularSubtotales con arreglo vacío retorna {D1: 0, D2: 0, D3: 0}', () => {
+    const subtotales = CalculosService.calcularSubtotales([]);
+    expect(subtotales).toEqual({ D1: 0, D2: 0, D3: 0 });
+  });
+
+  it('CP-26: calcularIGPP con máximo total 0 retorna 0 sin dividir por cero', () => {
+    const igpp = CalculosService.calcularIGPP({ D1: 10, D2: 5, D3: 8 }, 0);
+    expect(igpp).toBe(0);
+    expect(Number.isFinite(igpp)).toBe(true);
+  });
+});

@@ -611,3 +611,358 @@ describe('Evaluacion Resolver - Comentarios (CP-08 a CP-12)', () => {
     }
   });
 });
+
+// ─── CP-13 a CP-16: Queries de Resultados Interpretados ────────────────────
+
+describe('Evaluacion Resolver - Resultados Interpretados (CP-13 a CP-16)', () => {
+  let servidorApollo: ApolloServer;
+
+  beforeAll(async () => {
+    const schema = crearSchema();
+    servidorApollo = new ApolloServer({ schema });
+    await seedDimensiones();
+  });
+
+  it('CP-13: obtenerResultadosEvaluacion retorna resultado interpretado con dimensiones, IGPP y nivel', async () => {
+    const evaluacionId = await crearEvaluacion(servidorApollo);
+
+    const resultado = await servidorApollo.executeOperation(
+      {
+        query: `
+          query ObtenerResultados($id: ID!) {
+            obtenerResultadosEvaluacion(id: $id) {
+              evaluacion_id
+              docente_cedula
+              dimensiones {
+                nombre
+                clave
+                puntaje
+                maximo
+                porcentaje
+                nivel
+              }
+              puntaje_total
+              maximo_total
+              IGPP
+              nivel_general
+              dimension_prioritaria
+            }
+          }
+        `,
+        variables: { id: evaluacionId }
+      },
+      { contextValue: {} }
+    );
+
+    expect(resultado.body.kind).toBe('single');
+    if (resultado.body.kind === 'single') {
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      const res = resultado.body.singleResult.data?.obtenerResultadosEvaluacion as any;
+      expect(res).toBeDefined();
+      expect(res.evaluacion_id).toBe(evaluacionId);
+      expect(res.docente_cedula).toBe('1718056490');
+      expect(res.dimensiones).toHaveLength(3);
+      expect(res.puntaje_total).toBeGreaterThan(0);
+      expect(res.maximo_total).toBeGreaterThan(0);
+      expect(res.IGPP).toBeGreaterThan(0);
+      expect(res.nivel_general).toBeDefined();
+      expect(res.dimension_prioritaria).toBeDefined();
+    }
+  });
+
+  it('CP-14: obtenerResultadosEvaluacion con ID inexistente retorna null', async () => {
+    const resultado = await servidorApollo.executeOperation(
+      {
+        query: `
+          query ObtenerResultados($id: ID!) {
+            obtenerResultadosEvaluacion(id: $id) {
+              evaluacion_id
+            }
+          }
+        `,
+        variables: { id: '507f1f77bcf86cd799439011' }
+      },
+      { contextValue: {} }
+    );
+
+    expect(resultado.body.kind).toBe('single');
+    if (resultado.body.kind === 'single') {
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      expect(resultado.body.singleResult.data?.obtenerResultadosEvaluacion).toBeNull();
+    }
+  });
+
+  it('CP-15: obtenerResultadosPorDocente retorna lista de resultados interpretados', async () => {
+    await crearEvaluacion(servidorApollo);
+
+    const resultado = await servidorApollo.executeOperation(
+      {
+        query: `
+          query ObtenerResultadosDocente($cedula: CedulaEcuatoriana!) {
+            obtenerResultadosPorDocente(cedula: $cedula) {
+              evaluacion_id
+              docente_cedula
+              dimensiones {
+                nombre
+                clave
+                puntaje
+                maximo
+                porcentaje
+                nivel
+              }
+              puntaje_total
+              maximo_total
+              IGPP
+              nivel_general
+              dimension_prioritaria
+            }
+          }
+        `,
+        variables: { cedula: '1718056490' }
+      },
+      { contextValue: {} }
+    );
+
+    expect(resultado.body.kind).toBe('single');
+    if (resultado.body.kind === 'single') {
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      const resultados = resultado.body.singleResult.data?.obtenerResultadosPorDocente as any[];
+      expect(resultados).toBeDefined();
+      expect(resultados.length).toBeGreaterThanOrEqual(1);
+      expect(resultados[0].dimensiones).toHaveLength(3);
+      expect(resultados[0].IGPP).toBeGreaterThan(0);
+    }
+  });
+
+  it('CP-16: obtenerResultadosPorDocente con cédula sin evaluaciones retorna lista vacía', async () => {
+    const resultado = await servidorApollo.executeOperation(
+      {
+        query: `
+          query ObtenerResultadosDocente($cedula: CedulaEcuatoriana!) {
+            obtenerResultadosPorDocente(cedula: $cedula) {
+              evaluacion_id
+            }
+          }
+        `,
+        variables: { cedula: '1722250295' }
+      },
+      { contextValue: {} }
+    );
+
+    expect(resultado.body.kind).toBe('single');
+    if (resultado.body.kind === 'single') {
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      const resultados = resultado.body.singleResult.data?.obtenerResultadosPorDocente as any[];
+      expect(resultados).toEqual([]);
+    }
+  });
+});
+
+// ─── CP-17 a CP-18: Resumen General ────────────────────────────────────────
+
+describe('Evaluacion Resolver - Resumen General (CP-17 y CP-18)', () => {
+  let servidorApollo: ApolloServer;
+
+  beforeAll(async () => {
+    const schema = crearSchema();
+    servidorApollo = new ApolloServer({ schema });
+    await seedDimensiones();
+  });
+
+  it('CP-17: obtenerResumenGeneral sin evaluaciones retorna promedios en 0', async () => {
+    const resultado = await servidorApollo.executeOperation(
+      {
+        query: `
+          query {
+            obtenerResumenGeneral {
+              total_evaluaciones
+              promedio_D1
+              promedio_D2
+              promedio_D3
+              promedio_IGPP
+              nivel_general
+              dimensiones {
+                nombre
+                clave
+                puntaje
+                maximo
+                porcentaje
+                nivel
+              }
+            }
+          }
+        `
+      },
+      { contextValue: {} }
+    );
+
+    expect(resultado.body.kind).toBe('single');
+    if (resultado.body.kind === 'single') {
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      const resumen = resultado.body.singleResult.data?.obtenerResumenGeneral as any;
+      expect(resumen).toBeDefined();
+      expect(resumen.total_evaluaciones).toBe(0);
+      expect(resumen.promedio_D1).toBe(0);
+      expect(resumen.promedio_IGPP).toBe(0);
+      expect(resumen.dimensiones).toHaveLength(3);
+    }
+  });
+
+  it('CP-18: obtenerResumenGeneral con evaluaciones retorna promedios correctos', async () => {
+    await crearEvaluacion(servidorApollo);
+
+    const resultado = await servidorApollo.executeOperation(
+      {
+        query: `
+          query {
+            obtenerResumenGeneral {
+              total_evaluaciones
+              promedio_D1
+              promedio_D2
+              promedio_D3
+              promedio_IGPP
+              nivel_general
+              dimensiones {
+                nombre
+                clave
+                puntaje
+                maximo
+                porcentaje
+                nivel
+              }
+            }
+          }
+        `
+      },
+      { contextValue: {} }
+    );
+
+    expect(resultado.body.kind).toBe('single');
+    if (resultado.body.kind === 'single') {
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      const resumen = resultado.body.singleResult.data?.obtenerResumenGeneral as any;
+      expect(resumen).toBeDefined();
+      expect(resumen.total_evaluaciones).toBeGreaterThanOrEqual(1);
+      expect(resumen.promedio_D1).toBeGreaterThan(0);
+      expect(resumen.promedio_IGPP).toBeGreaterThan(0);
+      expect(resumen.nivel_general).toBeDefined();
+    }
+  });
+});
+
+// ─── CP-19 a CP-21: Queries básicos de evaluaciones ────────────────────────
+
+describe('Evaluacion Resolver - Queries básicos (CP-19 a CP-21)', () => {
+  let servidorApollo: ApolloServer;
+
+  beforeAll(async () => {
+    const schema = crearSchema();
+    servidorApollo = new ApolloServer({ schema });
+    await seedDimensiones();
+  });
+
+  it('CP-19: obtenerEvaluaciones retorna todas las evaluaciones', async () => {
+    await crearEvaluacion(servidorApollo);
+
+    const resultado = await servidorApollo.executeOperation(
+      {
+        query: `
+          query {
+            obtenerEvaluaciones {
+              id
+              cedula_docente
+              resultados {
+                IGPP
+              }
+            }
+          }
+        `
+      },
+      { contextValue: {} }
+    );
+
+    expect(resultado.body.kind).toBe('single');
+    if (resultado.body.kind === 'single') {
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      const evaluaciones = resultado.body.singleResult.data?.obtenerEvaluaciones as any[];
+      expect(evaluaciones).toBeDefined();
+      expect(evaluaciones.length).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('CP-20: obtenerEvaluacion por ID retorna evaluación correcta', async () => {
+    const evaluacionId = await crearEvaluacion(servidorApollo);
+
+    const resultado = await servidorApollo.executeOperation(
+      {
+        query: `
+          query ObtenerEvaluacion($id: ID!) {
+            obtenerEvaluacion(id: $id) {
+              id
+              cedula_docente
+              respuestas {
+                reactivo_codigo
+                valor
+              }
+              resultados {
+                subtotales {
+                  D1
+                  D2
+                  D3
+                }
+                IGPP
+                dimension_prioritaria
+              }
+            }
+          }
+        `,
+        variables: { id: evaluacionId }
+      },
+      { contextValue: {} }
+    );
+
+    expect(resultado.body.kind).toBe('single');
+    if (resultado.body.kind === 'single') {
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      const evaluacion = resultado.body.singleResult.data?.obtenerEvaluacion as any;
+      expect(evaluacion).toBeDefined();
+      expect(evaluacion.id).toBe(evaluacionId);
+      expect(evaluacion.cedula_docente).toBe('1718056490');
+      expect(evaluacion.respuestas).toHaveLength(15);
+      expect(evaluacion.resultados.IGPP).toBe(75); // todos valor=3 → 15/20 = 75%
+    }
+  });
+
+  it('CP-21: obtenerEvaluacionesPorDocente retorna evaluaciones del docente', async () => {
+    await crearEvaluacion(servidorApollo);
+
+    const resultado = await servidorApollo.executeOperation(
+      {
+        query: `
+          query ObtenerEvaluacionesDocente($cedula: CedulaEcuatoriana!) {
+            obtenerEvaluacionesPorDocente(cedula: $cedula) {
+              id
+              cedula_docente
+              resultados {
+                IGPP
+              }
+            }
+          }
+        `,
+        variables: { cedula: '1718056490' }
+      },
+      { contextValue: {} }
+    );
+
+    expect(resultado.body.kind).toBe('single');
+    if (resultado.body.kind === 'single') {
+      expect(resultado.body.singleResult.errors).toBeUndefined();
+      const evaluaciones = resultado.body.singleResult.data?.obtenerEvaluacionesPorDocente as any[];
+      expect(evaluaciones).toBeDefined();
+      expect(evaluaciones.length).toBeGreaterThanOrEqual(1);
+      evaluaciones.forEach((ev: any) => {
+        expect(ev.cedula_docente).toBe('1718056490');
+      });
+    }
+  });
+});
