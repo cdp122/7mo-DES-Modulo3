@@ -1,6 +1,6 @@
 @startuml Diagrama_Casos_De_Uso_Autenticacion
 
-left to right direction
+top to bottom direction
 skinparam packageStyle rectangle
 skinparam shadowing false
 skinparam actorStyle awesome
