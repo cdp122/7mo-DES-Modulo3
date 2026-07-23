@@ -2,43 +2,41 @@
 
 |#E3F2FD|Usuario|
 start
-:Ingresar número de cédula;
+repeat
+  :Ingresar número de cédula;
+  
+  |#E8F5E9|Sistema|
+backward:Mostrar error de validación de cédula;
+repeat while (¿Cédula válida?) is (no) not (sí)
 
-|#E8F5E9|Sistema|
-:Verificar el rol asociado a la cédula;
+:Buscar cédula en colección de Administradores;
 
 if (¿Es Administrador?) then (sí)
   :Presentar opciones de ingreso (Encuesta / Panel Admin);
   
+  |#E3F2FD|Usuario|
+  :Seleccionar modo de acceso;
+  
   if (¿Opción seleccionada?) then (Panel Admin)
-    |#E8F5E9|Sistema|
-    :Solicitar contraseña de administrador;
-    
     |#E3F2FD|Usuario|
     repeat
       :Ingresar contraseña;
       
       |#E8F5E9|Sistema|
-      if (¿Contraseña correcta?) then (sí)
-        :Autenticar y otorgar permisos de administrador;
-        |#E3F2FD|Usuario|
-        :Ingresar al Panel de Administración;
-        stop
-      else (no)
-        |#E8F5E9|Sistema|
-        :Mostrar mensaje de error;
-      endif
+    backward:Mostrar mensaje de error;
+    repeat while (¿Contraseña correcta?) is (no) not (sí)
+    
+    :Autenticar y otorgar permisos de administrador;
     |#E3F2FD|Usuario|
-    repeat while (¿Reintentar?) is (sí)
-    ->no;
-    |#E8F5E9|Sistema|
-    :Cancelar autenticación y volver al inicio;
+    :Ingresar al Panel de Administración;
     stop
   else (Encuesta)
     |#E8F5E9|Sistema|
+    :Redirigir a la encuesta docente;
   endif
 else (no)
   |#E8F5E9|Sistema|
+  :Permitir acceso directo a la encuesta;
 endif
 
 |#E3F2FD|Usuario|

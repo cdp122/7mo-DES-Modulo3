@@ -10,21 +10,26 @@ actor "Administrador" as Admin
 
 rectangle "Módulo de Login y Autenticación" {
     usecase "CU-01: Ingresar Cédula" as CU_IngresarCedula
-    usecase "CU-02: Seleccionar Modo de Acceso" as CU_SeleccionarModo
-    usecase "CU-03: Autenticar Administrador" as CU_AutenticarAdmin
-    usecase "CU-04: Acceder a Encuesta" as CU_AccederEncuesta
-    usecase "CU-05: Acceder a Panel de Administración" as CU_AccederPanel
+    usecase "CU-02: Validar Cédula" as CU_ValidarCedula
+    usecase "CU-03: Verificar Rol por Cédula" as CU_VerificarRol
+    usecase "CU-04: Seleccionar Modo de Acceso" as CU_SeleccionarModo
+    usecase "CU-05: Autenticar Administrador" as CU_AutenticarAdmin
+    usecase "CU-06: Acceder a Encuesta" as CU_AccederEncuesta
+    usecase "CU-07: Acceder a Panel de Administración" as CU_AccederPanel
 }
 
 Usuario --> CU_IngresarCedula
 Admin --> CU_IngresarCedula
 
-CU_IngresarCedula .> CU_AccederEncuesta : <<extend>> \n (Si es Usuario Regular)
-CU_IngresarCedula .> CU_SeleccionarModo : <<extend>> \n (Si es Administrador)
+CU_IngresarCedula ..> CU_ValidarCedula : <<include>>
+CU_IngresarCedula ..> CU_VerificarRol : <<include>>
 
-CU_SeleccionarModo .> CU_AccederEncuesta : <<extend>> \n (Elige Encuesta)
-CU_SeleccionarModo .> CU_AutenticarAdmin : <<extend>> \n (Elige Panel Admin)
+CU_VerificarRol ..> CU_AccederEncuesta : <<extend>> \n (Si es Usuario Regular)
+CU_VerificarRol ..> CU_SeleccionarModo : <<extend>> \n (Si es Administrador)
 
-CU_AutenticarAdmin .> CU_AccederPanel : <<include>>
+CU_SeleccionarModo ..> CU_AccederEncuesta : <<extend>> \n (Elige Encuesta)
+CU_SeleccionarModo ..> CU_AutenticarAdmin : <<extend>> \n (Elige Panel Admin)
+
+CU_AutenticarAdmin ..> CU_AccederPanel : <<include>>
 
 @enduml
